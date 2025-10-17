@@ -479,3 +479,33 @@ body, html {
   }
 }
 
+
+
+/* Custom sci-fi cursor */
+.custom-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #00ffff;
+  box-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff, 0 0 30px #00ffff;
+  pointer-events: none;
+  z-index: 999999; /* above canvas and all elements */
+}
+
+/* Trail dots */
+.laser-trail {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #00ffff;
+  opacity: 0.5;
+  pointer-events: none;
+  z-index: 999998;
+}
+

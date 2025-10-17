@@ -44,11 +44,7 @@ for (let i = 0; i < 100; i++) {
     blending: THREE.AdditiveBlending
   });
   const crystal = new THREE.Mesh(geom, mat);
-  crystal.position.set(
-    (Math.random() - 0.5) * 100,
-    Math.random() * 40 - 10,
-    (Math.random() - 0.5) * 100
-  );
+  crystal.position.set((Math.random() - 0.5) * 100, Math.random() * 40 - 10, (Math.random() - 0.5) * 100);
   crystal.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, 0);
   crystalGroup.add(crystal);
 }
@@ -70,7 +66,7 @@ for (let i = 0; i < 600; i++) {
 }
 scene.add(particles);
 
-// Liquid energy surface (undulating plane)
+// Liquid energy surface
 const surfaceGeom = new THREE.PlaneGeometry(200, 200, 80, 80);
 const surfaceMat = new THREE.MeshStandardMaterial({
   color: 0x111133,
@@ -85,26 +81,52 @@ surface.rotation.x = -Math.PI / 2;
 surface.position.y = -5;
 scene.add(surface);
 
-// Animation loop
+// --- Freeze Button ---
+let animating = true;
+const freezeBtn = document.createElement("button");
+freezeBtn.textContent = "Freeze Background";
+freezeBtn.style.position = "absolute";
+freezeBtn.style.bottom = "10px"; // 10px from bottom
+freezeBtn.style.top = "auto";    // reset top
+freezeBtn.style.left = "10px";   // still 10px from left
+freezeBtn.style.zIndex = "10";
+freezeBtn.style.padding = "0.5em 1em";
+freezeBtn.style.background = "#222";
+freezeBtn.style.color = "#fff";
+freezeBtn.style.border = "none";
+freezeBtn.style.cursor = "pointer";
+document.body.appendChild(freezeBtn);
+
+freezeBtn.addEventListener("click", () => {
+  animating = !animating;
+  if (!animating) {
+    renderer.render(scene, camera); // render one frame
+    freezeBtn.textContent = "Resume Background";
+  } else {
+    animate();
+    freezeBtn.textContent = "Freeze Background";
+  }
+});
+
+// --- Animation loop ---
 let time = 0;
 function animate() {
+  if (!animating) return;
   requestAnimationFrame(animate);
   time += 0.015;
 
-  // Crystals shimmer & float
+  // Crystals
   crystalGroup.children.forEach((c, i) => {
     c.rotation.x += 0.002 + Math.sin(time + i) * 0.001;
     c.rotation.y += 0.003;
     c.position.y += Math.sin(time * 0.6 + i) * 0.02;
-
     const hueShift = (Math.sin(time + i * 0.2) * 30 + 180) / 360;
     c.material.emissive.setHSL(hueShift, 1, 0.6);
   });
 
-  // Ripple surface (modern geometry update)
+  // Surface
   const pos = surface.geometry.attributes.position;
-  const count = pos.count;
-  for (let i = 0; i < count; i++) {
+  for (let i = 0; i < pos.count; i++) {
     const x = pos.getX(i);
     const y = pos.getY(i);
     const z = Math.sin(x * 0.15 + time) * 1.2 + Math.cos(y * 0.1 + time * 0.8) * 1.2;
@@ -112,23 +134,25 @@ function animate() {
   }
   pos.needsUpdate = true;
 
-  // Spirit particles drift
+  // Particles
   particles.children.forEach((p, i) => {
     p.position.y += Math.sin(time * 0.5 + i) * 0.02;
     p.position.x += Math.cos(time * 0.3 + i) * 0.002;
     p.material.opacity = 0.1 + Math.sin(time + i) * 0.05;
   });
 
-  // Gentle camera movement
+  // Camera
   camera.position.x = Math.sin(time * 0.1) * 20;
   camera.position.z = Math.cos(time * 0.1) * 40;
   camera.lookAt(0, 0, 0);
 
-  // Fog breathing
+  // Fog
   scene.fog.density = 0.04 + Math.sin(time * 0.2) * 0.01;
 
   renderer.render(scene, camera);
 }
+
+// Start animation
 animate();
 
 // Resize handling

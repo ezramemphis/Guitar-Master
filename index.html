@@ -66,7 +66,6 @@
   <script src="https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.min.js"></script>
   <script src="background.js"></script>
   <script src="script.js"></script>
-  <script src="theory.js"></script>
 
   <script>
   // --- Panel Buttons ---
@@ -112,6 +111,39 @@
   // --- Initialize ---
   showLevelButtons();
 </script>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const hoverFile = "music/hover.wav";
+
+  function playHoverSound() {
+    const sound = new Audio(hoverFile);
+    sound.volume = 0.25; // quieter
+    sound.play().catch(() => {}); // ignore play errors
+  }
+
+  function attachHoverSounds() {
+    // select only panel buttons inside #panelButtons
+    const elems = document.querySelectorAll("#panelButtons button");
+    elems.forEach(el => {
+      // remove existing to prevent duplicate listeners
+      el.removeEventListener("mouseenter", playHoverSound);
+      el.addEventListener("mouseenter", playHoverSound);
+    });
+  }
+
+  // attach to any existing buttons
+  attachHoverSounds();
+
+  // observe for dynamically added buttons (Level/Exercise buttons)
+  const panelButtonsContainer = document.getElementById("panelButtons");
+  const observer = new MutationObserver(attachHoverSounds);
+  observer.observe(panelButtonsContainer, { childList: true });
+});
+</script>
+
+
 
 
 </body>

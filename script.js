@@ -13,12 +13,10 @@ muteBtn.textContent = isMuted?"🔇":"🔈";
 
 // Music functions
 const songs = [
-  "music/Get You - Daniel Caesar (feat. Kali Uchis).mp3",
-  "music/You Got It - Mk.gee.mp3",
-  "music/All To Me - GIVĒON.mp3",
-  "music/DNM - Mk.gee.mp3",
-  "music/You - Don Toliver (feat. Travis Scott).mp3",
-  "music/Dream Police - Mk.gee.mp3"
+  "music/All For Nothing - Zachariehs.mp3",
+  "music/a way out - my head is empty.mp3",
+  "music/Redemption Arc - Zachariehs.mp3",
+  "music/home - .diedlonely.mp3"
 ];
 
 function playRandomSong(){
@@ -109,5 +107,55 @@ songProgress.addEventListener('input', () => {
 
   // Move slider text immediately
   sliderText.style.transform = `translateX(${100 - songProgress.value * 2}%)`;
+});
+
+
+
+
+// ================================
+// Sci-Fi Cursor with Laser Trail
+// ================================
+
+document.addEventListener("DOMContentLoaded", () => {
+  // Create main cursor
+  const cursor = document.createElement("div");
+  cursor.className = "custom-cursor";
+  document.body.appendChild(cursor);
+
+  // Create trail dots
+  const trailCount = 10;
+  const trails = [];
+  for (let i = 0; i < trailCount; i++) {
+    const dot = document.createElement("div");
+    dot.className = "laser-trail";
+    document.body.appendChild(dot);
+    trails.push(dot);
+  }
+
+  let mouseX = 0, mouseY = 0;
+  const trailPos = Array(trailCount).fill({ x: 0, y: 0 });
+
+  document.addEventListener("mousemove", (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    cursor.style.transform = `translate(${mouseX - 7}px, ${mouseY - 7}px)`;
+  });
+
+  function animate() {
+    let prevX = mouseX;
+    let prevY = mouseY;
+    trails.forEach((dot, i) => {
+      const x = trailPos[i]?.x || prevX;
+      const y = trailPos[i]?.y || prevY;
+      const lerpX = x + (prevX - x) * 0.2;
+      const lerpY = y + (prevY - y) * 0.2;
+      dot.style.transform = `translate(${lerpX - 4}px, ${lerpY - 4}px)`;
+      trailPos[i] = { x: lerpX, y: lerpY };
+      prevX = lerpX;
+      prevY = lerpY;
+    });
+    requestAnimationFrame(animate);
+  }
+  animate();
 });
 
