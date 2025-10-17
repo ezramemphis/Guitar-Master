@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Animated Panels</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+</head>
+<body>
+  <canvas id="bgCanvas"></canvas>
+
+  <div class="container">
+    <!-- Circle wrapper for slide -->
+    <div class="circle-wrapper">
+      <div class="circle">
+        <div class="shine"></div>
+      </div>
+    </div>
+
+    <!-- Right Sliding Panel -->
+    <div class="panel">
+      <div class="panel-buttons" id="panelButtons">
+        <!-- Level buttons injected via JS -->
+      </div>
+    </div>
+
+    <!-- Header Panel -->
+<div class="header-panel">
+  <div class="header-inner">
+    <button id="diceBtn">🎲</button>
+    <div class="song-slider">
+      <div class="slider-text" id="sliderText">No song playing</div>
+    </div>
+    <button id="muteBtn">🔈</button>
+  </div>
+
+  <!-- Social Icons (separate from header-inner) -->
+<div class="social-icons">
+  <a href="https://instagram.com" target="_blank" class="social-icon">
+    <img src="assets/instagram.svg" alt="Instagram" />
+  </a>
+  <a href="https://youtube.com" target="_blank" class="social-icon">
+    <img src="assets/youtube.svg" alt="YouTube" />
+  </a>
+  <a href="https://linkedin.com" target="_blank" class="social-icon">
+    <img src="assets/linkedin.svg" alt="LinkedIn" />
+  </a>
+  <a href="https://twitter.com" target="_blank" class="social-icon">
+    <img src="assets/twitter.svg" alt="Twitter" />
+  </a>
+</div>
+
+
+
+
+  <script src="https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.min.js"></script>
+  <script src="background.js"></script>
+  <script src="script.js"></script>
+  <script src="theory.js"></script>
+
+  <script>
+  // --- Panel Buttons ---
+  const panelButtonsContainer = document.getElementById("panelButtons");
+  const levels = ["Level 1","Level 2","Level 3","Level 4"];
+  const exercises = ["Chords","Scales","Arpeggios"];
+
+  // --- Create a button ---
+  function createButton(text, href="#") {
+    const btn = document.createElement("button");
+    btn.classList.add("panel-btn");
+    btn.textContent = text;
+    if(href !== "#") btn.addEventListener("click", () => window.location.href = href);
+    return btn;
+  }
+
+  // --- Show Level Buttons ---
+  function showLevelButtons() {
+    panelButtonsContainer.innerHTML = "";
+    levels.forEach((lvl, i) => {
+      const btn = createButton(lvl);
+      btn.addEventListener("click", () => showExerciseButtons(i+1));
+      panelButtonsContainer.appendChild(btn);
+    });
+  }
+
+  // --- Show Exercises for a Level ---
+  function showExerciseButtons(level) {
+    panelButtonsContainer.innerHTML = "";
+
+    // Add exercise buttons first
+    exercises.forEach(ex => {
+      const href = `exercises/level${level}_${ex.toLowerCase()}.html`;
+      panelButtonsContainer.appendChild(createButton(ex, href));
+    });
+
+    // --- Add Back button at the bottom ---
+    const backBtn = createButton("← Back");
+    backBtn.addEventListener("click", showLevelButtons);
+    panelButtonsContainer.appendChild(backBtn);
+  }
+
+  // --- Initialize ---
+  showLevelButtons();
+</script>
+
+
+</body>
+</html>

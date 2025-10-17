@@ -1,0 +1,64 @@
+/* Reset & base */
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  background: #0f111a; /* deep, modern background */
+  color: #e0e0e0;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Main container */
+.exercise-container {
+  max-width: 700px;
+  padding: 50px 40px;
+  background: linear-gradient(145deg, #1c1f2c, #14161e);
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+  text-align: center;
+  border: 2px solid #3ab0ff; /* subtle neon accent */
+  transition: all 0.3s ease;
+}
+
+.exercise-container:hover {
+  box-shadow: 0 12px 50px rgba(58,176,255,0.6);
+}
+
+/* Header */
+.exercise-container h1 {
+  font-size: 2rem;
+  margin-bottom: 25px;
+  color: #3ab0ff; /* neon highlight */
+  text-shadow: 0 0 8px rgba(58,176,255,0.6);
+}
+
+/* Paragraph */
+.exercise-container p {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #c0c0c0;
+  margin-bottom: 35px;
+}
+
+/* Back button */
+.back-btn {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  padding: 12px 28px;
+  background: #14161e;
+  color: #3ab0ff;
+  border: 2px solid #3ab0ff;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.back-btn:hover {
+  background: #3ab0ff;
+  color: #14161e;
+  box-shadow: 0 0 12px #3ab0ff, 0 0 24px rgba(58,176,255,0.5);
+  transform: scale(1.05);
+}

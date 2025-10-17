@@ -1,0 +1,439 @@
+/* Reset */
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  font-family: sans-serif;
+  background: #b3e5ff; /* fallback if WebGL fails */
+}
+
+/* 3D canvas behind everything */
+#bgCanvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0; /* behind all UI */
+}
+
+/* Main container above canvas */
+.container {
+  position: relative;
+  z-index: 1; /* above canvas */
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+
+
+
+
+
+/* Circle wrapper handles slide only */
+.circle-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 45%; /* start slightly left of center */
+  width: 250px;
+  height: 250px;
+  transform: translate(-50%, -50%); /* center it relative to its left */
+  perspective: 800px;
+  transition: transform 0.8s cubic-bezier(.6,.05,.1,.9);
+}
+
+/* Slide left when container is active */
+.container.active .circle-wrapper {
+  left: 20%; /* glide more left */
+  transform: translate(-50%, -50%); /* keep centered relative to left */
+}
+
+/* Circle rotates on mouse only */
+.circle {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, #171e1e 40%, #040506 100%);
+  cursor: pointer;
+  transform-style: preserve-3d;
+  transition: transform 0.05s linear; /* rotation only */
+  position: relative;
+  box-shadow: 5px 0 20px rgba(28,28,28,0.1);
+  z-index: 2;
+}
+
+
+/* Iris */
+.circle::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 60px;
+  height: 60px;
+  background: radial-gradient(circle at 30% 30%, #3b6236 0%, #004477 80%);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+}
+
+/* Pupil */
+.circle::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 25px;
+  height: 25px;
+  background-color: black;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 10px rgba(0,0,0,0.8);
+}
+
+
+
+
+
+
+
+
+
+
+
+/* Right sliding panel with slow, chaotic glossy shimmer */
+.panel {
+  position: absolute;
+  right: -100%;
+  top: 0;
+  width: 65%;
+  height: 100%;
+  background-color: rgba(75, 84, 93, 0.02); /* glassy transparency */
+  /* REMOVE opacity: 0.5; */
+  z-index: 2;
+
+  /* Angled left edge */
+  clip-path: polygon(40% 0%, 100% 0%, 100% 100%, 0% 100%);
+
+  /* Glass blur effect stays */
+  backdrop-filter: blur(10px) saturate(180%);
+  -webkit-backdrop-filter: blur(10px) saturate(180%);
+
+  /* Multiple subtle gradient layers for chaotic shine */
+  background-image:
+    linear-gradient(120deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.02) 100%),
+    linear-gradient(60deg, rgba(255,255,255,0.01) 0%, rgba(255,255,255,0.03) 50%, rgba(255,255,255,0.01) 100%),
+    linear-gradient(200deg, rgba(255,255,255,0.015) 0%, rgba(255,255,255,0.04) 50%, rgba(255,255,255,0.015) 100%);
+  background-size: 300% 300%, 200% 200%, 250% 250%;
+
+  /* Animate the layers slowly and independently */
+  animation: glossyShimmer 25s ease-in-out infinite;
+}
+
+@keyframes glossyShimmer {
+  0% {
+    background-position: 0% 0%, 0% 0%, 0% 0%;
+    backdrop-filter: blur(9px) saturate(170%);
+  }
+  25% {
+    background-position: 50% 20%, 30% 50%, 60% 10%;
+    backdrop-filter: blur(10px) saturate(180%);
+  }
+  50% {
+    background-position: 100% 40%, 60% 80%, 20% 50%;
+    backdrop-filter: blur(8px) saturate(175%);
+  }
+  75% {
+    background-position: 30% 70%, 80% 20%, 50% 80%;
+    backdrop-filter: blur(11px) saturate(185%);
+  }
+  100% {
+    background-position: 0% 0%, 0% 0%, 0% 0%;
+    backdrop-filter: blur(9px) saturate(170%);
+  }
+}
+
+
+
+
+/* Header panel (top bar) */
+.header-panel {
+  position: absolute;
+  top: -100px; /* hidden initially */
+  left: 0;
+  width: 100%;
+  height: 13.6%; /* top 1/6 of screen */
+
+  /* Deeper metallic gradient (less see-through) */
+  background: linear-gradient(
+    to bottom,
+    rgba(10, 20, 40, 0.97) 0%,    /* deeper and richer navy */
+    rgba(20, 40, 70, 0.95) 50%, 
+    rgba(35, 70, 110, 0.92) 100%
+  );
+
+  /* Glossy top shine (stronger highlight band) */
+  background-image:
+    linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.1) 0%,
+      rgba(255, 255, 255, 0.06) 15%,
+      rgba(255, 255, 255, 0) 40%
+    );
+  background-blend-mode: overlay;
+
+  /* Stronger glass blur + more opacity */
+  backdrop-filter: blur(20px) saturate(180%) brightness(1.1);
+  -webkit-backdrop-filter: blur(20px) saturate(180%) brightness(1.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+
+  /* Depth + subtle reflective shadow */
+  box-shadow:
+    0 8px 25px rgba(0, 0, 0, 0.5),
+    inset 0 3px 6px rgba(255, 255, 255, 0.15),
+    inset 0 -3px 10px rgba(0, 0, 0, 0.5);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  transition: top 0.8s cubic-bezier(.6, .5, .1, .9);
+}
+
+
+
+
+
+
+
+
+/* Inner container for header buttons + slider */
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  /* Metallic glossy styling */
+  background: linear-gradient(145deg,
+    rgba(35, 55, 75, 0.85) 0%,
+    rgba(57, 82, 109, 0.85) 35%,
+    rgba(80, 110, 140, 0.9) 60%,
+    rgba(40, 60, 85, 0.85) 100%);
+  border-radius: 10px;
+  padding: 10px 24px;
+
+  /* Metallic shine + slight texture */
+  box-shadow:
+    inset 0 1px 3px rgba(255, 255, 255, 0.15),
+    inset 0 -2px 5px rgba(0, 0, 0, 0.3),
+    0 4px 12px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+
+  /* Optional animation for subtle shimmer */
+  position: relative;
+  overflow: hidden;
+}
+
+.header-inner::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 150%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    transparent 100%
+  );
+  transform: skewX(-20deg);
+  animation: metallicShine 6s infinite linear;
+}
+
+@keyframes metallicShine {
+  0% {
+    left: -150%;
+  }
+  100% {
+    left: 150%;
+  }
+}
+
+
+
+
+
+
+
+
+
+/* Slide header down */
+.container.active .header-panel {
+  top: 0;
+}
+
+/* Circle & panel animations */
+.container.active .circle {
+  transform: translateX(-400px) scale(0.8);
+}
+.container.active .panel {
+  right: 0;
+}
+
+/* Buttons */
+#diceBtn, #muteBtn {
+  font-size: 1.5rem;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  color: white;
+  transition: transform 0.2s ease;
+}
+#diceBtn:hover, #muteBtn:hover {
+  transform: scale(1.2);
+}
+
+/* Song slider */
+.song-slider {
+  width: 200px; /* fixed width for centering */
+  height: 30px;
+  background: black;
+  overflow: hidden;
+  position: relative;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Sliding text inside panel */
+.slider-text {
+  position: absolute;
+  white-space: nowrap;
+  color: #a1a1a1;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 12px;
+  padding-left: 100%;
+  animation: slide 10s linear infinite;
+  text-shadow: 0 0 5px #3c3c3c, 0 0 10px #311489;
+}
+
+/* Slide animation */
+@keyframes slide {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Panel Buttons - position and cascading control */
+.panel-buttons {
+  position: absolute;
+  top: 180px;   /* vertical distance from top of panel */
+  right: 75px;  /* horizontal distance from right edge */
+  display: flex;
+  flex-direction: column;
+  gap: 25px;    /* vertical spacing between buttons */
+  z-index: 3; /* higher than panel background */
+}
+
+/* Base button style */
+.panel-btn {
+  padding: 24px 238px; /* button size */
+  background: linear-gradient(135deg, #77a9d2, #3a3f45); /* less transparent, more solid */
+  color: #ffffff; /* pure white text */
+  font-family: 'sans-serif';
+  font-size: 26px; /* bigger, clearer text */
+  font-weight: 700;
+  border: none;
+  border-radius: 0px;
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+  position: relative;
+  text-shadow: 0 0 6px rgba(255,255,255,0.4);
+  box-shadow: 0 0 12px rgba(0,255,255,0.3);
+   opacity: 1;      /* explicitly full opacity */
+    /* Angled left edge */
+  clip-path: polygon(6% 0%, 100% 0%, 94% 100%, 0% 100%);
+}
+
+/* Cascade shift left for each descending button */
+.panel-btn:nth-child(1) { transform: translateX(0); }
+.panel-btn:nth-child(2) { transform: translateX(-45px); }
+.panel-btn:nth-child(3) { transform: translateX(-90px); }
+.panel-btn:nth-child(4) { transform: translateX(-135px); }
+
+/* Hover - preserve X offset but scale and glow */
+.panel-btn:nth-child(1):hover { transform: translateX(0) scale(1.05); }
+.panel-btn:nth-child(2):hover { transform: translateX(-45px) scale(1.05); }
+.panel-btn:nth-child(3):hover { transform: translateX(-90px) scale(1.05); }
+.panel-btn:nth-child(4):hover { transform: translateX(-135px) scale(1.05); }
+
+/* Hover glow styling (same for all) */
+.panel-btn:hover {
+  background: linear-gradient(135deg, #00ffff, #0077ff);
+  box-shadow: 0 0 10px rgba(0,255,255,0.8), 0 0 50px rgba(0,200,255,0.5);
+  text-shadow: 0 0 10px rgba(255,255,255,0.9);
+}
+
+
+
+
+/* Social Icons Container - positioned to the right of the header-inner box */
+.header-panel .social-icons {
+  position: absolute;
+  top: 50%;
+  right: 20px; /* distance from right edge */
+  transform: translateY(-50%);
+  display: flex;
+  gap: 12px;
+  z-index: 4;
+}
+
+/* Individual Icon Styles */
+.social-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  overflow: hidden;
+}
+
+/* Ensure SVG fits nicely inside the button */
+.social-icon img {
+  width: 70%;  /* scale down inside the button */
+  height: 70%;
+  object-fit: contain;
+}
+
+/* Hover Effect */
+.social-icon:hover {
+  background: linear-gradient(135deg, #00ffff, #0077ff);
+  transform: scale(1.1) rotate(-2deg);
+  box-shadow: 0 4px 16px rgba(0,200,255,0.5);
+}
