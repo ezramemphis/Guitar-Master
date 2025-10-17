@@ -437,3 +437,45 @@ body, html {
   transform: scale(1.1) rotate(-2deg);
   box-shadow: 0 4px 16px rgba(0,200,255,0.5);
 }
+
+
+/* Gothic Title with Metallic Shine */
+.header-title {
+  position: absolute;
+  left: 8%; /* responsive offset from left edge */
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: 'UnifrakturMaguntia', cursive;
+  font-size: 2.3rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+
+  /* Metallic base look */
+  color: rgb(200, 200, 200);
+  background: linear-gradient(
+    120deg,
+    #9a9a9a 0%,
+    #cbcdce 30%,
+    #a0a0a0 45%,
+    #6f6f6f 60%,
+    #b9babb 80%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  /* Shine animation */
+  animation: shine 18s linear infinite;
+}
+
+/* Keyframes for moving shine */
+@keyframes shine {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
