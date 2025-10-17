@@ -90,41 +90,53 @@ circleWrapper.addEventListener("click", () => {
 });
 
 
+
+
+
 // ================================
 // FIXED SMOOTH ROTATION
 // ================================
 let isSliding = false;
 let rotationX = 0;
 let rotationY = 0;
+let targetX = 0, targetY = 0;
+let mouseX = 0, mouseY = 0;
 
-// Prevent jump during glide
-circleWrapper.addEventListener("transitionstart", e => {
-  if (["left", "transform"].includes(e.propertyName)) isSliding = true;
-});
-circleWrapper.addEventListener("transitionend", e => {
-  if (["left", "transform"].includes(e.propertyName)) isSliding = false;
+// Track mouse globally
+document.addEventListener("mousemove", e => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
 });
 
 // Stable rotation using requestAnimationFrame
-let targetX = 0, targetY = 0;
-document.addEventListener("mousemove", e => {
-  if (!hasActivated || isSliding) return;
-  const rect = circleWrapper.getBoundingClientRect();
-  const cx = rect.left + rect.width / 2;
-  const cy = rect.top + rect.height / 2;
-  const xNorm = (e.clientX - cx) / (rect.width / 2);
-  const yNorm = (e.clientY - cy) / (rect.height / 2);
-  targetX = -9 * yNorm;
-  targetY = 9 * xNorm;
-});
-
 function smoothRotate() {
-  rotationX += (targetX - rotationX) * 0.1;
-  rotationY += (targetY - rotationY) * 0.1;
-  circle.style.transform = `rotateX(${rotationX}deg) rotateY(${rotationY}deg)`;
+  if (hasActivated && !isSliding) {
+    const rect = circleWrapper.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const xNorm = (mouseX - cx) / (rect.width / 2);
+    const yNorm = (mouseY - cy) / (rect.height / 2);
+
+    targetX = -9 * yNorm;
+    targetY = 9 * xNorm;
+
+    rotationX += (targetX - rotationX) * 0.1;
+    rotationY += (targetY - rotationY) * 0.1;
+
+    circle.style.transform = `rotateX(${rotationX}deg) rotateY(${rotationY}deg)`;
+  }
+
   requestAnimationFrame(smoothRotate);
 }
 smoothRotate();
+
+
+
+
+
+
+
+
 
 // ================================
 // SONG PROGRESS + CONTROLS

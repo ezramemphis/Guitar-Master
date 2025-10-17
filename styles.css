@@ -147,7 +147,6 @@ body, html {
 
 
 
-/* Right sliding panel with slow, chaotic glossy shimmer */
 .panel {
   position: absolute;
   right: -100%;

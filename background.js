@@ -1,163 +1,78 @@
 const canvas = document.getElementById('bgCanvas');
 const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x000011);
 
-// Ethereal fog
-scene.fog = new THREE.FogExp2(0x040611, 0.045);
+// Camera
+const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 500);
+camera.position.z = 60;
 
-// Camera setup
-const camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 2000);
-camera.position.set(0, 10, 40);
-
-// Renderer setup
+// Renderer
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.setClearColor(0x02030a, 1);
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.outputEncoding = THREE.sRGBEncoding;
 
-// Lights
-const mainLight = new THREE.PointLight(0x66ccff, 2, 200);
-mainLight.position.set(0, 25, 0);
-scene.add(mainLight);
+// --- Hypnotic Spiral Vortex --- //
+const vortexGroup = new THREE.Group();
+scene.add(vortexGroup);
 
-const fillLight = new THREE.PointLight(0xaa66ff, 0.6, 200);
-fillLight.position.set(30, 10, 30);
-scene.add(fillLight);
+const vortexCount = 2000;
+const positions = new Float32Array(vortexCount * 3);
+const colors = new Float32Array(vortexCount * 3);
 
-const ambient = new THREE.AmbientLight(0x446688, 0.3);
-scene.add(ambient);
+for (let i = 0; i < vortexCount; i++) {
+    const angle = Math.random() * Math.PI * 12; // many twists
+    const radius = Math.random() * 40;
+    const height = (Math.random() - 0.5) * 60;
 
-// Floating crystals
-const crystalGroup = new THREE.Group();
-for (let i = 0; i < 100; i++) {
-  const geom = new THREE.TetrahedronGeometry(Math.random() * 1.2 + 0.3);
-  const hue = 180 + Math.random() * 120;
-  const mat = new THREE.MeshStandardMaterial({
-    color: new THREE.Color(`hsl(${hue}, 100%, 60%)`),
-    emissive: new THREE.Color(`hsl(${hue}, 100%, 50%)`),
-    emissiveIntensity: 0.8,
-    metalness: 0.9,
-    roughness: 0.2,
-    transparent: true,
-    opacity: 0.8,
-    blending: THREE.AdditiveBlending
-  });
-  const crystal = new THREE.Mesh(geom, mat);
-  crystal.position.set((Math.random() - 0.5) * 100, Math.random() * 40 - 10, (Math.random() - 0.5) * 100);
-  crystal.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, 0);
-  crystalGroup.add(crystal);
+    positions[i * 3] = Math.cos(angle) * radius;
+    positions[i * 3 + 1] = height;
+    positions[i * 3 + 2] = Math.sin(angle) * radius;
+
+    const hue = 180 + Math.random() * 60;
+    const color = new THREE.Color(`hsl(${hue}, 100%, 70%)`);
+    colors[i * 3] = color.r;
+    colors[i * 3 + 1] = color.g;
+    colors[i * 3 + 2] = color.b;
 }
-scene.add(crystalGroup);
 
-// Spirit particles
-const particles = new THREE.Group();
-for (let i = 0; i < 600; i++) {
-  const geom = new THREE.SphereGeometry(0.08, 6, 6);
-  const mat = new THREE.MeshBasicMaterial({
-    color: new THREE.Color(`hsl(${180 + Math.random() * 120}, 100%, 70%)`),
+const geometry = new THREE.BufferGeometry();
+geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+const material = new THREE.PointsMaterial({
+    vertexColors: true,
+    size: 0.15,
     transparent: true,
-    opacity: 0.15,
-    blending: THREE.AdditiveBlending
-  });
-  const p = new THREE.Mesh(geom, mat);
-  p.position.set((Math.random() - 0.5) * 150, Math.random() * 60 - 20, (Math.random() - 0.5) * 150);
-  particles.add(p);
-}
-scene.add(particles);
-
-// Liquid energy surface
-const surfaceGeom = new THREE.PlaneGeometry(200, 200, 80, 80);
-const surfaceMat = new THREE.MeshStandardMaterial({
-  color: 0x111133,
-  emissive: 0x00ccff,
-  emissiveIntensity: 0.5,
-  wireframe: true,
-  transparent: true,
-  opacity: 0.4
-});
-const surface = new THREE.Mesh(surfaceGeom, surfaceMat);
-surface.rotation.x = -Math.PI / 2;
-surface.position.y = -5;
-scene.add(surface);
-
-// --- Freeze Button ---
-let animating = true;
-const freezeBtn = document.createElement("button");
-freezeBtn.textContent = "Freeze Background";
-freezeBtn.style.position = "absolute";
-freezeBtn.style.bottom = "10px"; // 10px from bottom
-freezeBtn.style.top = "auto";    // reset top
-freezeBtn.style.left = "10px";   // still 10px from left
-freezeBtn.style.zIndex = "10";
-freezeBtn.style.padding = "0.5em 1em";
-freezeBtn.style.background = "#222";
-freezeBtn.style.color = "#fff";
-freezeBtn.style.border = "none";
-freezeBtn.style.cursor = "pointer";
-document.body.appendChild(freezeBtn);
-
-freezeBtn.addEventListener("click", () => {
-  animating = !animating;
-  if (!animating) {
-    renderer.render(scene, camera); // render one frame
-    freezeBtn.textContent = "Resume Background";
-  } else {
-    animate();
-    freezeBtn.textContent = "Freeze Background";
-  }
+    opacity: 0.7,
+    blending: THREE.AdditiveBlending,
 });
 
-// --- Animation loop ---
+const vortexPoints = new THREE.Points(geometry, material);
+vortexGroup.add(vortexPoints);
+
+// --- Animate --- //
 let time = 0;
 function animate() {
-  if (!animating) return;
-  requestAnimationFrame(animate);
-  time += 0.015;
+    requestAnimationFrame(animate);
+    time += 0.01;
 
-  // Crystals
-  crystalGroup.children.forEach((c, i) => {
-    c.rotation.x += 0.002 + Math.sin(time + i) * 0.001;
-    c.rotation.y += 0.003;
-    c.position.y += Math.sin(time * 0.6 + i) * 0.02;
-    const hueShift = (Math.sin(time + i * 0.2) * 30 + 180) / 360;
-    c.material.emissive.setHSL(hueShift, 1, 0.6);
-  });
+    // Rotate vortex for hypnotic effect
+    vortexGroup.rotation.y += 0.003;
+    vortexGroup.rotation.x += 0.001;
 
-  // Surface
-  const pos = surface.geometry.attributes.position;
-  for (let i = 0; i < pos.count; i++) {
-    const x = pos.getX(i);
-    const y = pos.getY(i);
-    const z = Math.sin(x * 0.15 + time) * 1.2 + Math.cos(y * 0.1 + time * 0.8) * 1.2;
-    pos.setZ(i, z);
-  }
-  pos.needsUpdate = true;
+    // Camera subtle drift
+    camera.position.x = Math.sin(time * 0.03) * 20;
+    camera.position.y = Math.sin(time * 0.015) * 10;
+    camera.lookAt(0, 0, 0);
 
-  // Particles
-  particles.children.forEach((p, i) => {
-    p.position.y += Math.sin(time * 0.5 + i) * 0.02;
-    p.position.x += Math.cos(time * 0.3 + i) * 0.002;
-    p.material.opacity = 0.1 + Math.sin(time + i) * 0.05;
-  });
-
-  // Camera
-  camera.position.x = Math.sin(time * 0.1) * 20;
-  camera.position.z = Math.cos(time * 0.1) * 40;
-  camera.lookAt(0, 0, 0);
-
-  // Fog
-  scene.fog.density = 0.04 + Math.sin(time * 0.2) * 0.01;
-
-  renderer.render(scene, camera);
+    renderer.render(scene, camera);
 }
 
-// Start animation
 animate();
 
-// Resize handling
+// --- Resize Handling --- //
 window.addEventListener('resize', () => {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
 });
