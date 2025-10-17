@@ -9,16 +9,24 @@
   <link rel="icon" type="image/svg+xml" href="assets/guitar.svg">
 
 </head>
+
+
 <body>
   <canvas id="bgCanvas"></canvas>
 
   <div class="container">
-    <!-- Circle wrapper for slide -->
-    <div class="circle-wrapper">
+  <!-- Circle wrapper for slide -->
+<div class="circle-wrapper">
+  <div class="circle-slider"> <!-- handles sliding -->
+    <div class="circle-inner"> <!-- handles rotation -->
       <div class="circle">
         <div class="shine"></div>
       </div>
     </div>
+  </div>
+</div>
+
+
 
     <!-- Right Sliding Panel -->
     <div class="panel">
@@ -115,33 +123,49 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  const hoverFile = "music/hover.wav";
+  const hoverSoundFile = "assets/sounds/ice.wav"; // hover sound
+  const clickSoundFile = "assets/sounds/thin_click.wav"; // click sound
 
   function playHoverSound() {
-    const sound = new Audio(hoverFile);
-    sound.volume = 0.25; // quieter
-    sound.play().catch(() => {}); // ignore play errors
+    const sound = new Audio(hoverSoundFile);
+    sound.volume = 0.35;
+    sound.play().catch(() => {});
   }
 
-  function attachHoverSounds() {
-    // select only panel buttons inside #panelButtons
-    const elems = document.querySelectorAll("#panelButtons button");
-    elems.forEach(el => {
-      // remove existing to prevent duplicate listeners
-      el.removeEventListener("mouseenter", playHoverSound);
-      el.addEventListener("mouseenter", playHoverSound);
+  function playClickSound() {
+    const sound = new Audio(clickSoundFile);
+    sound.volume = 0.35;
+    sound.play().catch(() => {});
+  }
+
+  // Panel buttons hover + click
+  function attachPanelButtonSounds() {
+    const buttons = document.querySelectorAll("#panelButtons button");
+    buttons.forEach(btn => {
+      btn.removeEventListener("mouseenter", playHoverSound);
+      btn.removeEventListener("click", playClickSound);
+      btn.addEventListener("mouseenter", playHoverSound);
+      btn.addEventListener("click", playClickSound);
     });
   }
 
-  // attach to any existing buttons
-  attachHoverSounds();
+  attachPanelButtonSounds();
 
-  // observe for dynamically added buttons (Level/Exercise buttons)
   const panelButtonsContainer = document.getElementById("panelButtons");
-  const observer = new MutationObserver(attachHoverSounds);
+  const observer = new MutationObserver(attachPanelButtonSounds);
   observer.observe(panelButtonsContainer, { childList: true });
+
+  // Social icons hover + click
+  const socialIcons = document.querySelectorAll(".social-icon");
+  socialIcons.forEach(icon => {
+    icon.removeEventListener("mouseenter", playHoverSound);
+    icon.removeEventListener("click", playClickSound);
+    icon.addEventListener("mouseenter", playHoverSound); // hover
+    icon.addEventListener("click", playClickSound); // click
+  });
 });
 </script>
+
 
 
 
