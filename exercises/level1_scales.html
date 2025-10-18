@@ -4,16 +4,37 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Level 1 - Scales</title>
-  <link rel="stylesheet" href="../exercises.css" />
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="../exercises2.css" />
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+  <!-- Script -->
+  <script src="../scales.js" defer></script>
 </head>
 <body>
   <div class="exercise-container">
-    <h1>This is Scales Level 1</h1>
+    <h1>Level 1 — Scales</h1>
     <p>
-      This page will contain interactive exercises for practicing scales in Level 1. 
-      Eventually, you’ll see tutorials, examples, and exercises to help you learn and master scales step by step.
+      Practice identifying and understanding all seven major modes.  
+      Click <strong>Generate Scale</strong> to get a random mode and root,  
+      or enable <strong>Auto Mode</strong> to cycle through them automatically.
     </p>
+
+    <!-- Output Display -->
+    <div id="scale-output" class="scale-output">Press “Generate Scale” to begin!</div>
+
+    <!-- Controls -->
+    <div class="controls">
+      <button id="generate-btn" class="main-btn">🎵 Generate Scale</button>
+
+      <div class="auto-controls">
+        <label for="intervalInput">Auto-generate every (seconds):</label>
+        <input type="number" id="intervalInput" value="5" min="1" />
+        <button id="autoBtn" class="main-btn">▶ Start Auto</button>
+      </div>
+    </div>
+
     <button onclick="window.history.back()" class="back-btn">← Back</button>
   </div>
 </body>
