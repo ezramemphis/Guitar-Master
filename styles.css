@@ -147,19 +147,31 @@ body, html {
 
 
 
+/* PANEL CONTAINER — handles slide & clipping only */
 .panel {
   position: absolute;
   right: -100%;
   top: 0;
   width: 65%;
   height: 100%;
-  background-color: rgba(75, 84, 93, 0.02); /* glassy transparency */
   z-index: 2;
-
-  /* Angled left edge */
   clip-path: polygon(40% 0%, 100% 0%, 100% 100%, 0% 100%);
+  transition: right 0.8s cubic-bezier(.6, .05, .1, .9);
+  overflow: hidden;
+  background: transparent; /* fully clear */
+}
 
-  /* Glass blur effect stays */
+/* Slide in when active */
+.container.active .panel {
+  right: 0;
+}
+
+/* GLASS LAYER — glossy chaotic shimmer */
+.panel-glass {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(75, 84, 93, 0.02); /* glassy transparency */
+  opacity: 0.5; /* control glass opacity here */
   backdrop-filter: blur(10px) saturate(180%);
   -webkit-backdrop-filter: blur(10px) saturate(180%);
 
@@ -173,14 +185,65 @@ body, html {
   /* Animate the layers slowly and independently */
   animation: glossyShimmer 25s ease-in-out infinite;
 
-  /* Add smooth slide transition */
-  transition: right 0.8s cubic-bezier(.6, .05, .1, .9);
+  pointer-events: none; /* allows button clicks through */
 }
 
-/* When container is active, slide in */
-.container.active .panel {
-  right: 0;
+/* PANEL BUTTONS — positioned independently, full opacity */
+.panel-buttons {
+  position: absolute;
+  top: 180px;
+  right: 75px;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  z-index: 3; /* always above glass */
 }
+
+/* BUTTON BASE STYLE */
+.panel-btn {
+  padding: 24px 238px;
+  background: linear-gradient(135deg, #4291cd, #051323);
+  color: #ffffff;
+  font-family: 'sans-serif';
+  font-size: 26px;
+  font-weight: 700;
+  border: none;
+  border-radius: 0px;
+  cursor: pointer;
+  position: relative;
+  opacity: 1; /* full opacity, unaffected by panel */
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+  text-shadow: 0 0 6px rgba(255,255,255,0.4);
+  box-shadow: 0 0 12px rgba(0,255,255,0.3);
+  clip-path: polygon(6% 0%, 100% 0%, 94% 100%, 0% 100%);
+}
+
+/* CASCADING BUTTON OFFSET */
+.panel-btn:nth-child(1) { transform: translateX(0); }
+.panel-btn:nth-child(2) { transform: translateX(-45px); }
+.panel-btn:nth-child(3) { transform: translateX(-90px); }
+.panel-btn:nth-child(4) { transform: translateX(-135px); }
+
+/* HOVER EFFECTS */
+.panel-btn:nth-child(1):hover { transform: translateX(0) scale(1.05); }
+.panel-btn:nth-child(2):hover { transform: translateX(-45px) scale(1.05); }
+.panel-btn:nth-child(3):hover { transform: translateX(-90px) scale(1.05); }
+.panel-btn:nth-child(4):hover { transform: translateX(-135px) scale(1.05); }
+
+.panel-btn:hover {
+  background: linear-gradient(135deg, #00ffff, #0077ff);
+  box-shadow: 0 0 10px rgba(0,255,255,0.8), 0 0 50px rgba(0,200,255,0.5);
+  text-shadow: 0 0 10px rgba(255,255,255,0.9);
+}
+
+/* CHAOTIC SHIMMER ANIMATION */
+@keyframes glossyShimmer {
+  0%   { background-position: 0% 0%, 50% 50%, 100% 100%; }
+  50%  { background-position: 100% 50%, 0% 100%, 50% 0%; }
+  100% { background-position: 0% 0%, 50% 50%, 100% 100%; }
+}
+
+
 
 
 
@@ -360,68 +423,6 @@ body, html {
 
 
 
-
-
-
-
-
-
-
-
-
-/* Panel Buttons - position and cascading control */
-.panel-buttons {
-  position: absolute;
-  top: 180px;   /* vertical distance from top of panel */
-  right: 75px;  /* horizontal distance from right edge */
-  display: flex;
-  flex-direction: column;
-  gap: 25px;    /* vertical spacing between buttons */
-  z-index: 3; /* higher than panel background */
-}
-
-/* Base button style */
-.panel-btn {
-  padding: 24px 238px; /* button size */
-  background: linear-gradient(135deg, #77a9d2, #3a3f45); /* less transparent, more solid */
-  color: #ffffff; /* pure white text */
-  font-family: 'sans-serif';
-  font-size: 26px; /* bigger, clearer text */
-  font-weight: 700;
-  border: none;
-  border-radius: 0px;
-  cursor: pointer;
-  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
-  position: relative;
-  text-shadow: 0 0 6px rgba(255,255,255,0.4);
-  box-shadow: 0 0 12px rgba(0,255,255,0.3);
-   opacity: 1;      /* explicitly full opacity */
-    /* Angled left edge */
-  clip-path: polygon(6% 0%, 100% 0%, 94% 100%, 0% 100%);
-}
-
-/* Cascade shift left for each descending button */
-.panel-btn:nth-child(1) { transform: translateX(0); }
-.panel-btn:nth-child(2) { transform: translateX(-45px); }
-.panel-btn:nth-child(3) { transform: translateX(-90px); }
-.panel-btn:nth-child(4) { transform: translateX(-135px); }
-
-/* Hover - preserve X offset but scale and glow */
-.panel-btn:nth-child(1):hover { transform: translateX(0) scale(1.05); }
-.panel-btn:nth-child(2):hover { transform: translateX(-45px) scale(1.05); }
-.panel-btn:nth-child(3):hover { transform: translateX(-90px) scale(1.05); }
-.panel-btn:nth-child(4):hover { transform: translateX(-135px) scale(1.05); }
-
-/* Hover glow styling (same for all) */
-.panel-btn:hover {
-  background: linear-gradient(135deg, #00ffff, #0077ff);
-  box-shadow: 0 0 10px rgba(0,255,255,0.8), 0 0 50px rgba(0,200,255,0.5);
-  text-shadow: 0 0 10px rgba(255,255,255,0.9);
-}
-
-
-
-
 /* Social Icons Container - positioned to the right of the header-inner box */
 .header-panel .social-icons {
   position: absolute;
@@ -532,6 +533,38 @@ body, html {
   z-index: 999998;
 }
 
+
+
+
+
+/* Theme Button */
+#themeBtn {
+  position: absolute; /* position it independently of header-inner */
+  left: 400px;         /* off to the left */
+  top: 40px;          /* adjust as needed */
+  padding: 8px 14px;
+  background: linear-gradient(145deg, #080d6d, #3ba7b3);
+  border: none;
+  border-radius: 8px;
+  font-family: 'sci-fi', monospace;
+  font-size: 12px;
+  cursor: pointer;
+  color: #ffffff;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  transition: all 0.2s ease;
+  z-index: 10;
+  opacity: 0.5; /* slightly transparent */
+}
+
+#themeBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.25);
+}
+
+#themeBtn:active {
+  transform: translateY(1px);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+}
 
 
 
