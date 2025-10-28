@@ -172,7 +172,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const observer = new MutationObserver(attachPanelButtonSounds);
   observer.observe(panelButtonsContainer, { childList: true });
 
-  // Social icons hover + click
+  // Social icons hover + click sounds
   const socialIcons = document.querySelectorAll(".social-icon");
   socialIcons.forEach(icon => {
     icon.removeEventListener("mouseenter", playHoverSound);
