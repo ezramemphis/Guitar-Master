@@ -87,7 +87,7 @@
     function showExerciseButtons(level) {
       panelButtonsContainer.innerHTML = "";
       exercises.forEach(ex => {
-        const href = `exercises/level${level}_${ex.toLowerCase()}.html`;
+        const href = `exercises/level${level}/level${level}_${ex.toLowerCase()}.html`;
         panelButtonsContainer.appendChild(createButton(ex, href));
       });
       const backBtn = createButton("← Back");
