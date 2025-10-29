@@ -2,8 +2,21 @@
 // 🎵 SCALE GENERATOR JS //
 // --------------------- //
 
-// All possible note roots (enharmonics simplified)
-const NOTES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+// Enharmonic note list with both sharp and flat spellings
+const ENHARMONICS = [
+  ["C"],
+  ["C#", "Db"],
+  ["D"],
+  ["D#", "Eb"],
+  ["E", "Fb"],
+  ["F", "E#"],
+  ["F#", "Gb"],
+  ["G"],
+  ["G#", "Ab"],
+  ["A"],
+  ["A#", "Bb"],
+  ["B", "Cb"]
+];
 
 // All major modes
 const MODES = [
@@ -16,48 +29,60 @@ const MODES = [
   "Locrian"
 ];
 
-// Interval formulas for each mode (in semitones)
+// Interval formulas (in semitones)
 const MODE_INTERVALS = {
-  Ionian:      [2, 2, 1, 2, 2, 2, 1],
-  Dorian:      [2, 1, 2, 2, 2, 1, 2],
-  Phrygian:    [1, 2, 2, 2, 1, 2, 2],
-  Lydian:      [2, 2, 2, 1, 2, 2, 1],
-  Mixolydian:  [2, 2, 1, 2, 2, 1, 2],
-  Aeolian:     [2, 1, 2, 2, 1, 2, 2],
-  Locrian:     [1, 2, 2, 1, 2, 2, 2]
+  Ionian: [2, 2, 1, 2, 2, 2, 1],
+  Dorian: [2, 1, 2, 2, 2, 1, 2],
+  Phrygian: [1, 2, 2, 2, 1, 2, 2],
+  Lydian: [2, 2, 2, 1, 2, 2, 1],
+  Mixolydian: [2, 2, 1, 2, 2, 1, 2],
+  Aeolian: [2, 1, 2, 2, 1, 2, 2],
+  Locrian: [1, 2, 2, 1, 2, 2, 2]
 };
 
-// ---------------------- //
-// 🎶 Generate a scale   //
-// ---------------------- //
+// ---------------------------- //
+// 🎶 Generate a scale properly //
+// ---------------------------- //
 function generateScale(rootNote, mode) {
   const intervals = MODE_INTERVALS[mode];
-  const startIndex = NOTES.indexOf(rootNote);
-  let scale = [rootNote];
+  const startIndex = findNoteIndex(rootNote);
+  if (startIndex === -1) return [];
+
+  const scale = [rootNote];
   let currentIndex = startIndex;
 
   for (let i = 0; i < intervals.length; i++) {
-    currentIndex = (currentIndex + intervals[i]) % NOTES.length;
-    scale.push(NOTES[currentIndex]);
+    currentIndex = (currentIndex + intervals[i]) % ENHARMONICS.length;
+    const prevLetter = scale[i][0];
+    const nextOptions = ENHARMONICS[currentIndex];
+
+    // Pick enharmonic spelling that avoids repeating the same letter name
+    const nextNote =
+      nextOptions.find(n => n[0] !== prevLetter) || nextOptions[0];
+
+    scale.push(nextNote);
   }
 
   return scale;
 }
 
-// ------------------------------ //
-// 🔀 Random scale generator      //
-// ------------------------------ //
+// Find the enharmonic index of a given note
+function findNoteIndex(note) {
+  return ENHARMONICS.findIndex(group => group.includes(note));
+}
+
+// Randomly pick root and mode
 function randomScale() {
-  const root = NOTES[Math.floor(Math.random() * NOTES.length)];
+  const rootGroup = ENHARMONICS[Math.floor(Math.random() * ENHARMONICS.length)];
+  const root = rootGroup[Math.floor(Math.random() * rootGroup.length)];
   const mode = MODES[Math.floor(Math.random() * MODES.length)];
   const scale = generateScale(root, mode);
 
-  // Randomly decide if we’re starting from a specific degree
   const randomDegree = Math.floor(Math.random() * 7) + 1;
   const degreeRoot = scale[randomDegree - 1];
   const degreeText =
     Math.random() < 0.5
-      ? "" // half the time show normal scale
+      ? ""
       : ` starting on the ${ordinal(randomDegree)} degree (${degreeRoot})`;
 
   return {
@@ -72,40 +97,15 @@ function ordinal(n) {
 }
 
 // ---------------------------- //
-// ⚙️ DOM + Auto Mode           //
+// ⚙️ DOM + Auto Mode Control   //
 // ---------------------------- //
 let autoInterval = null;
 
 window.addEventListener("DOMContentLoaded", () => {
-  const container = document.querySelector(".exercise-container");
-
-  // Create output area
-  const output = document.createElement("div");
-  output.className = "scale-output";
-  output.style.marginTop = "25px";
-  output.style.fontSize = "1.2rem";
-  output.style.color = "#3ab0ff";
-  container.appendChild(output);
-
-  // Generate button
-  const genBtn = document.createElement("button");
-  genBtn.textContent = "Generate Scale";
-  genBtn.className = "back-btn";
-  genBtn.style.marginTop = "20px";
-  container.appendChild(genBtn);
-
-  // Auto generate controls
-  const autoContainer = document.createElement("div");
-  autoContainer.style.marginTop = "30px";
-  autoContainer.innerHTML = `
-    <label style="display:block; margin-bottom:8px;">Auto-generate every (seconds):</label>
-    <input type="number" id="intervalInput" value="5" min="1" style="padding:6px; border-radius:8px; border:1px solid #3ab0ff; background:#14161e; color:#e0e0e0; width:80px; text-align:center;">
-    <button id="autoBtn" class="back-btn" style="margin-left:10px;">Start Auto</button>
-  `;
-  container.appendChild(autoContainer);
-
-  const intervalInput = autoContainer.querySelector("#intervalInput");
-  const autoBtn = autoContainer.querySelector("#autoBtn");
+  const output = document.getElementById("scale-output");
+  const genBtn = document.getElementById("generate-btn");
+  const autoBtn = document.getElementById("autoBtn");
+  const intervalInput = document.getElementById("intervalInput");
 
   // Manual generation
   genBtn.addEventListener("click", () => {
@@ -118,7 +118,7 @@ window.addEventListener("DOMContentLoaded", () => {
     if (autoInterval) {
       clearInterval(autoInterval);
       autoInterval = null;
-      autoBtn.textContent = "Start Auto";
+      autoBtn.textContent = "▶ Start Auto";
       output.innerHTML += "<br><small>Auto mode stopped.</small>";
     } else {
       const seconds = Math.max(1, parseFloat(intervalInput.value) || 5);
@@ -126,9 +126,9 @@ window.addEventListener("DOMContentLoaded", () => {
         const scaleData = randomScale();
         output.innerHTML = `<strong>${scaleData.name}</strong><br>${scaleData.notes}`;
       };
-      run(); // generate immediately
+      run();
       autoInterval = setInterval(run, seconds * 1000);
-      autoBtn.textContent = "Stop Auto";
+      autoBtn.textContent = "⏸ Stop Auto";
     }
   });
 });

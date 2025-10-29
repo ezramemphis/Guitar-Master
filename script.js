@@ -1,6 +1,5 @@
-// ================================
-// ELEMENTS
-// ================================
+
+// Elements
 const circleWrapper = document.querySelector('.circle-wrapper');
 const circle = document.querySelector('.circle');
 const container = document.querySelector('.container');
@@ -10,9 +9,7 @@ const diceBtn = document.getElementById("diceBtn");
 const pauseBtn = document.getElementById("pauseBtn");
 const songProgress = document.getElementById("songProgress");
 
-// ================================
-// AUDIO STATE
-// ================================
+// Audio State
 let currentAudio = null;
 let isMuted = localStorage.getItem("isMuted") === "true";
 let hasActivated = false;
@@ -20,9 +17,7 @@ let isPaused = false;
 
 muteBtn.textContent = isMuted ? "🔇" : "🔈";
 
-// ================================
 // SONG DATA
-// ================================
 const songs = [
   "music/All For Nothing - Zachariehs.mp3",
   "music/a way out - my head is empty.mp3",
@@ -46,9 +41,8 @@ const songs = [
   "music/Fr3sh - Kareem Lotfy.mp3"
 ];
 
-// ================================
-// AUDIO FUNCTIONS
-// ================================
+// Audio Functions
+
 function playRandomSong() {
   if (currentAudio) currentAudio.pause();
 
@@ -75,6 +69,37 @@ function rollDice() {
 
 muteBtn.addEventListener("click", toggleMute);
 diceBtn.addEventListener("click", rollDice);
+
+
+
+
+const songSelect = document.getElementById("songSelect");
+
+// Populate dropdown
+songs.forEach(songPath => {
+  const option = document.createElement("option");
+  option.value = songPath;
+  option.textContent = songPath.split("/").pop().replace(".mp3", "");
+  songSelect.appendChild(option);
+});
+
+// Handle song selection
+songSelect.addEventListener("change", () => {
+  const selectedSong = songSelect.value;
+  if (!selectedSong) return;
+
+  if (currentAudio) currentAudio.pause();
+  currentAudio = new Audio(selectedSong);
+  currentAudio.volume = isMuted ? 0 : 0.6;
+  sliderText.textContent = selectedSong.split("/").pop().replace(".mp3", "");
+  currentAudio.play();
+
+  currentAudio.addEventListener("ended", playRandomSong);
+  updateSlider();
+});
+
+
+
 
 // ================================
 // ACTIVATE / TOGGLE PANEL
