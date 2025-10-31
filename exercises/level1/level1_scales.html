@@ -5,11 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Level 1 - Scales</title>
 
-  <!-- Styles -->
   <link rel="stylesheet" href="../../exercises2.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-
-  <!-- Script -->
   <script src="../../scales.js" defer></script>
 </head>
 <body>
@@ -33,9 +29,35 @@
         <input type="number" id="intervalInput" value="5" min="1" />
         <button id="autoBtn" class="main-btn">▶ Start Auto</button>
       </div>
+
+      <!-- Timer Circle -->
+      <div class="timer-container">
+        <svg class="timer-svg" width="100" height="100">
+          <circle class="timer-bg" cx="50" cy="50" r="45" />
+          <circle class="timer-progress" cx="50" cy="50" r="45" />
+        </svg>
+        <div id="timer-text" class="timer-text">5</div>
+      </div>
     </div>
 
     <button onclick="window.history.back()" class="back-btn">← Back</button>
+  </div>
+
+  <!-- Metronome -->
+  <div class="metronome">
+    <h3>Metronome</h3>
+    <div class="metro-controls">
+      <label>Tempo:</label>
+      <input type="number" id="tempoInput" value="100" min="30" max="300" />
+      <label>Sound:</label>
+      <select id="metroSound">
+        <option value="1">Metronome 1</option>
+        <option value="2">Metronome 2</option>
+        <option value="3">Metronome 3</option>
+        <option value="4">Metronome 4</option>
+      </select>
+      <button id="metroToggle" class="main-btn">Start</button>
+    </div>
   </div>
 </body>
 </html>

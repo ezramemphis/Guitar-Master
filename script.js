@@ -197,3 +197,9 @@ songProgress.addEventListener("input", () => {
   sliderText.style.transform = `translateX(${100 - songProgress.value * 2}%)`;
 });
 
+
+
+
+
+
+
