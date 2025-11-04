@@ -5,16 +5,91 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Level 2 - Scales</title>
   <link rel="stylesheet" href="../../exercises.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <script src="../../scales.js" defer></script>
 </head>
 <body>
   <div class="exercise-container">
-    <h1>This is Scales Level 2</h1>
+    <h1>Level 2 — Scales</h1>
     <p>
-      This page will contain interactive exercises for practicing scales in Level 2. 
-      Eventually, you’ll see tutorials, examples, and exercises to help you learn and master scales step by step.
+      Practice identifying Level 2 scales, including exotic and jazz-influenced modes.
+      Click <strong>Generate Scale</strong> to get a random scale,
+      or enable <strong>Auto Mode</strong> to cycle automatically.
     </p>
+
+    <!-- Output -->
+    <div id="scale-output" class="scale-output">Press “Generate Scale” to begin!</div>
+
+    <!-- Controls -->
+    <div class="controls">
+      <button id="generate-btn" class="main-btn">🎵 Generate Scale</button>
+
+      <div class="auto-controls">
+        <label for="intervalInput">Auto-generate every (seconds):</label>
+        <input type="number" id="intervalInput" value="5" min="1" />
+        <button id="autoBtn" class="main-btn">▶ Start Auto</button>
+      </div>
+
+      <!-- Timer -->
+      <div class="timer-container">
+        <svg class="timer-svg" width="100" height="100">
+          <circle class="timer-bg" cx="50" cy="50" r="45" />
+          <circle class="timer-progress" cx="50" cy="50" r="45" />
+        </svg>
+        <div id="timer-text" class="timer-text">5</div>
+      </div>
+    </div>
+
     <button onclick="window.history.back()" class="back-btn">← Back</button>
   </div>
+
+  <!-- Metronome -->
+  <div class="metronome">
+    <h3>Metronome</h3>
+    <div class="metro-controls">
+      <label>Tempo:</label>
+      <input type="number" id="tempoInput" value="100" min="30" max="300" />
+      <label>Sound:</label>
+      <select id="metroSound">
+        <option value="1">Metronome 1</option>
+        <option value="2">Metronome 2</option>
+        <option value="3">Metronome 3</option>
+        <option value="4">Metronome 4</option>
+      </select>
+      <button id="metroToggle" class="main-btn">Start</button>
+    </div>
+  </div>
+
+   <button id="toggleRainbow" class="main-btn">🌈 Toggle Rainbow</button>
+
+  <script>
+    // Override auto generation for Level 2
+    window.addEventListener("DOMContentLoaded", () => {
+      const genBtn = document.getElementById("generate-btn");
+      const output = document.getElementById("scale-output");
+      const autoBtn = document.getElementById("autoBtn");
+      const intervalInput = document.getElementById("intervalInput");
+      let autoInterval = null;
+
+      const updateOutput = () => {
+        const data = randomScale(2); // Level 2
+        output.innerHTML = `<strong>${data.name}</strong><br>${data.notes}`;
+      };
+
+      genBtn.addEventListener("click", updateOutput);
+
+      autoBtn.addEventListener("click", () => {
+        if (autoInterval) {
+          clearInterval(autoInterval);
+          autoInterval = null;
+          autoBtn.textContent = "▶ Start Auto";
+        } else {
+          const interval = Math.max(1, parseFloat(intervalInput.value) || 5) * 1000;
+          updateOutput();
+          autoInterval = setInterval(updateOutput, interval);
+          autoBtn.textContent = "⏸ Stop Auto";
+        }
+      });
+    });
+  </script>
 </body>
 </html>

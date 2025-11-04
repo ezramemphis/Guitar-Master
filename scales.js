@@ -2,43 +2,99 @@
 // 🎵 SCALE GENERATOR JS //
 // --------------------- //
 
+// 🎵 ENHARMONICS WITH PREFERRED SPELLINGS
 const ENHARMONICS = [
   ["C"], ["C#", "Db"], ["D"], ["D#", "Eb"], ["E", "Fb"], ["F", "E#"],
   ["F#", "Gb"], ["G"], ["G#", "Ab"], ["A"], ["A#", "Bb"], ["B", "Cb"]
 ];
-const MODES = ["Ionian","Dorian","Phrygian","Lydian","Mixolydian","Aeolian","Locrian"];
-const MODE_INTERVALS = {
-  Ionian:[2,2,1,2,2,2,1], Dorian:[2,1,2,2,2,1,2], Phrygian:[1,2,2,2,1,2,2],
-  Lydian:[2,2,2,1,2,2,1], Mixolydian:[2,2,1,2,2,1,2],
-  Aeolian:[2,1,2,2,1,2,2], Locrian:[1,2,2,1,2,2,2]
+
+const LETTERS = ["C","D","E","F","G","A","B"];
+const NOTE_TO_SEMITONE = ENHARMONICS.reduce((acc, group, i) => {
+  group.forEach(n => acc[n] = i);
+  return acc;
+}, {});
+
+// 🎵 LEVEL SCALE POOLS
+const LEVEL_SCALES = {
+  1: ["Ionian","Dorian","Phrygian","Lydian","Mixolydian","Aeolian","Locrian"],
+  2: ["Melodic Minor","Dorian b2","Lydian Augmented","Lydian b7","Mixolydian b6","Aeolian b5","Altered"],
+  3: ["Harmonic Minor","Locrian natural 6","Ionian #5","Dorian #4","Phrygian Major","Lydian #2","Altered dim 7"],
+  4: ["Harmonic Major","Dorian b5","Phrygian b4","Lydian diminished","Mixolydian b2","Lydian Augmented #2","Locrian dim 7"]
 };
 
-// Generate scale with enharmonic logic
+// 🎵 SCALE INTERVALS
+const MODE_INTERVALS = {
+  "Ionian": [2,2,1,2,2,2,1],
+  "Dorian": [2,1,2,2,2,1,2],
+  "Phrygian": [1,2,2,2,1,2,2],
+  "Lydian": [2,2,2,1,2,2,1],
+  "Mixolydian": [2,2,1,2,2,1,2],
+  "Aeolian": [2,1,2,2,1,2,2],
+  "Locrian": [1,2,2,1,2,2,2],
+
+  "Melodic Minor": [2,1,2,2,2,2,1],
+  "Dorian b2": [1,2,2,2,2,1,2],
+  "Lydian Augmented": [2,2,2,2,1,2,1],
+  "Lydian b7": [2,2,2,1,2,1,2],
+  "Mixolydian b6": [2,2,1,2,1,2,2],
+  "Aeolian b5": [2,1,2,1,2,2,2],
+  "Altered": [1,2,1,2,2,2,2],
+
+  "Harmonic Minor": [2,1,2,2,1,3,1],
+  "Locrian natural 6": [1,2,2,1,2,2,2],
+  "Ionian #5": [2,2,1,2,3,1,1],
+  "Dorian #4": [2,1,3,1,2,2,1],
+  "Phrygian Major": [1,3,1,2,2,1,2],
+  "Lydian #2": [3,1,2,2,2,1,1],
+  "Altered dim 7": [1,2,1,2,1,3,2],
+
+  "Harmonic Major": [2,2,1,2,1,3,1],
+  "Dorian b5": [2,1,2,1,2,2,2],
+  "Phrygian b4": [1,2,1,2,2,2,2],
+  "Lydian diminished": [2,2,1,1,2,2,2],
+  "Mixolydian b2": [1,2,2,1,2,1,3],
+  "Lydian Augmented #2": [3,1,2,2,1,2,2],
+  "Locrian dim 7": [1,2,1,2,1,2,3]
+};
+
+// 🎲 HELPER: Find note in ENHARMONICS by letter
+function pickNoteByLetter(semitone, letter) {
+  const group = ENHARMONICS[semitone];
+  // pick the note that starts with the correct letter
+  const note = group.find(n => n[0].toUpperCase() === letter);
+  return note || group[0]; // fallback if missing (rare)
+}
+
+// 🎲 GENERATE SCALE (full-proof consecutive letters)
 function generateScale(root, mode) {
-  const intervals = MODE_INTERVALS[mode];
-  const startIndex = ENHARMONICS.findIndex(group => group.includes(root));
+  const intervals = MODE_INTERVALS[mode] || [2,2,1,2,2,2,1];
+  let semitone = NOTE_TO_SEMITONE[root];
   let scale = [root];
-  let current = startIndex;
+  let letterIndex = LETTERS.indexOf(root[0].toUpperCase());
+
   for (let i = 0; i < intervals.length; i++) {
-    current = (current + intervals[i]) % ENHARMONICS.length;
-    const prevLetter = scale[i][0];
-    const nextNote = ENHARMONICS[current].find(n => n[0] !== prevLetter) || ENHARMONICS[current][0];
-    scale.push(nextNote);
+    semitone = (semitone + intervals[i]) % 12;
+    letterIndex = (letterIndex + 1) % 7; // next consecutive letter
+    const nextLetter = LETTERS[letterIndex];
+    scale.push(pickNoteByLetter(semitone, nextLetter));
   }
+
+  scale[scale.length - 1] = root; // octave match
   return scale;
 }
 
-function randomScale() {
+// 🎲 RANDOM SCALE
+function randomScale(level = 1) {
+  const modePool = LEVEL_SCALES[level] || LEVEL_SCALES[1];
+  const mode = modePool[Math.floor(Math.random() * modePool.length)];
+
   const rootGroup = ENHARMONICS[Math.floor(Math.random() * ENHARMONICS.length)];
   const root = rootGroup[Math.floor(Math.random() * rootGroup.length)];
-  const mode = MODES[Math.floor(Math.random() * MODES.length)];
+
   const scale = generateScale(root, mode);
-  const degree = Math.floor(Math.random() * 7) + 1;
-  const degRoot = scale[degree - 1];
-  const degreeText = Math.random() < 0.5 ? "" : ` starting on the ${ordinal(degree)} degree (${degRoot})`;
-  return { name: `${root} ${mode}${degreeText}`, notes: scale.join(" - ") };
+  return { name: `${root} ${mode}`, notes: scale.join(" - ") };
 }
-function ordinal(n){return n+(["st","nd","rd"][((n+90)%100-10)%10-1]||"th");}
+
 
 // ---------------------------- //
 // ⚙️ DOM + Auto Mode + Timer   //
@@ -55,17 +111,15 @@ window.addEventListener("DOMContentLoaded", () => {
   const intervalInput = document.getElementById("intervalInput");
   const timerText = document.getElementById("timer-text");
   const timerCircle = document.querySelector(".timer-progress");
-
   const fullDash = 283;
+  let totalTime = parseFloat(intervalInput.value);
 
   const updateTimerVisual = () => {
-    const seconds = Math.max(0, Math.ceil(remainingTime));
+    const seconds = Math.max(1, Math.ceil(remainingTime));
     timerText.textContent = seconds;
-    const offset = fullDash * (1 - remainingTime / totalTime);
+    const offset = fullDash * (0 - remainingTime / totalTime);
     timerCircle.style.strokeDashoffset = offset;
   };
-
-  let totalTime = parseFloat(intervalInput.value);
 
   const startTimer = (seconds) => {
     totalTime = seconds;
@@ -88,7 +142,7 @@ window.addEventListener("DOMContentLoaded", () => {
       clearInterval(autoInterval);
       clearInterval(timerInterval);
       autoInterval = null;
-      timerCircle.style.strokeDashoffset = 283;
+      timerCircle.style.strokeDashoffset = fullDash;
       autoBtn.textContent = "▶ Start Auto";
     } else {
       const seconds = Math.max(1, parseFloat(intervalInput.value) || 5);
@@ -131,5 +185,28 @@ window.addEventListener("DOMContentLoaded", () => {
       metroInterval = setInterval(playClick, interval);
       metroBtn.textContent = "Stop";
     }
+  });
+
+  // ------------------- //
+  // 📝 Sheet Music Toggle //
+  // ------------------- //
+  const sheetTab = document.querySelector('.sheet-tab');
+  const sheetContainer = document.querySelector('.sheet-container');
+  sheetTab.addEventListener('click', () => {
+    sheetContainer.classList.toggle('open');
+  });
+
+  // ------------------- //
+  // 🌈 Rainbow Toggle   //
+  // ------------------- //
+  const toggleBtn = document.getElementById('toggleRainbow');
+  const exerciseContainer = document.querySelector('.exercise-container');
+
+  toggleBtn.classList.add('off');
+  toggleBtn.addEventListener('click', () => {
+    exerciseContainer.classList.toggle('rainbow');
+    const isOn = exerciseContainer.classList.contains('rainbow');
+    toggleBtn.classList.toggle('on', isOn);
+    toggleBtn.classList.toggle('off', !isOn);
   });
 });

@@ -1,64 +1,474 @@
-/* Reset & base */
-body, html {
+/* ---------- Base & Layout ---------- */
+html {
+  height: 100%;
+}
+
+body {
   margin: 0;
   padding: 0;
   font-family: 'Inter', sans-serif;
-  background: #0f111a; /* deep, modern background */
+  min-height: 100vh;
+  width: 100%;
   color: #e0e0e0;
-  height: 100vh;
+
+  /* Fixed gradient background */
+  background: radial-gradient(circle at 50% 20%, #7682a3 0%, #222739 60%, #0f111a 100%);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative; /* needed for pseudo-element */
 }
 
-/* Main container */
+/* ---------- Subtle metal texture overlay as 3x3 grid with zoom animation ---------- */
+body::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('assets/metal_texture_1.jpg') repeat;
+  background-size: calc(100% / 4) calc(100% / 4); /* 4x4 grid */
+  opacity: 0.09; /* subtle */
+  pointer-events: none;
+  z-index: -2; /* behind particles */
+
+  /* Animate zoom in and out */
+  animation: zoomMetal 16s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes zoomMetal {
+  0%, 25% { transform: scale(1); }
+  40%, 60% { transform: scale(1.14); }
+  75%, 100% { transform: scale(1); }
+}
+
 .exercise-container {
-  max-width: 700px;
-  padding: 50px 40px;
-  background: linear-gradient(145deg, #1c1f2c, #14161e);
-  border-radius: 16px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+  max-width: 800px;
+  width: 90%;
+  padding: 40px;
+  background: radial-gradient(145deg, rgba(145, 184, 203, 0.6), rgba(105, 142, 155, 0.6));
+  border-radius: 20px;
+  box-shadow: 0 12px 45px rgba(0, 0, 0, 0.7);
   text-align: center;
-  border: 2px solid #3ab0ff; /* subtle neon accent */
-  transition: all 0.3s ease;
+  position: relative;
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+  overflow: hidden; /* Keeps the glow border contained */
 }
 
-.exercise-container:hover {
-  box-shadow: 0 12px 50px rgba(58,176,255,0.6);
+/* 🔮 Animated gradient border (default: no rainbow) */
+.exercise-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  padding: 2px;
+  background: linear-gradient(135deg,
+    #4de8ff,
+    #718b96,
+    #415575,
+    #38bdf8,
+    #3b82f6,
+    #06b6d4,
+    #67e8f9,
+    #76adc4,
+    #3d434d,
+    #4de8ff
+  );
+  background-size: 400% 400%;
+  animation: borderShift 14s linear infinite;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: destination-out;
+  pointer-events: none;
+  filter: hue-rotate(0deg);
 }
 
-/* Header */
-.exercise-container h1 {
-  font-size: 2rem;
+/* 🌈 Enable rainbow effect by adding `.rainbow` to .exercise-container */
+.exercise-container.rainbow::before {
+  animation: 
+    borderShift 14s linear infinite, 
+    hueCycle 10s linear infinite;
+}
+
+/* 💫 Smooth gradient motion */
+@keyframes borderShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* 🌈 Hue rotation animation */
+@keyframes hueCycle {
+  0% { filter: hue-rotate(0deg); }
+  100% { filter: hue-rotate(360deg); }
+}
+
+
+
+/* ✨ Glow pulse around the edges */
+.exercise-container::after {
+  content: "";
+  position: absolute;
+  inset: -5px;
+  border-radius: 25px;
+  background: radial-gradient(circle at top left, rgba(93, 119, 125, 0.1), transparent 30%),
+              radial-gradient(circle at bottom right, rgba(47, 101, 176, 0.2), transparent 30%);
+  filter: blur(10px);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* 🌈 Animated gradient motion */
+@keyframes borderShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+
+
+/* ---------- Headers & Text ---------- */
+h1 {
+  color: #ffffff;
+  font-family: 'deeper_gothicregular';
+  font-size: 1.8rem;
   margin-bottom: 25px;
-  color: #3ab0ff; /* neon highlight */
-  text-shadow: 0 0 8px rgba(58,176,255,0.6);
+  text-shadow: 0 0 10px rgba(17, 22, 26, 0.7);
 }
 
-/* Paragraph */
-.exercise-container p {
+p {
+  color: #e0e0e0;
   font-size: 1rem;
+  margin-bottom: 30px;
   line-height: 1.6;
-  color: #c0c0c0;
-  margin-bottom: 35px;
+  opacity: 0.5;
 }
 
-/* Back button */
-.back-btn {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.9rem;
-  padding: 12px 28px;
-  background: #14161e;
-  color: #3ab0ff;
-  border: 2px solid #3ab0ff;
+/* ---------- Output ---------- */
+.scale-output {
+  font-size: 1.2rem;
+  color: #c0e6ff;
+  border: 1px solid rgba(58, 176, 255, 0.3);
+  text-shadow: 0 0 8px #1d6799;
   border-radius: 10px;
+  padding: 15px;
+  background: #14161e;
+  min-height: 60px;
+  margin-bottom: 25px;
+}
+
+/* ---------- Buttons ---------- */
+.main-btn {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  padding: 12px 26px;
+  background: #14161e;
+  color: #e27e69;
+  border: 2px solid #b29c77;
+  border-radius: 12px;
   cursor: pointer;
   transition: all 0.25s ease;
+  margin: 5px;
+}
+
+.main-btn:hover {
+  background: #dac9a4;
+  color: #14161e;
+  box-shadow: 0 0 15px #cfa738, 0 0 25px rgba(58, 176, 255, 0.5);
+  transform: scale(1.05);
+}
+
+.back-btn {
+  margin-top: 35px;
+  background: none;
+  color: #618fae;
+  border: 1px solid #3ab0ff;
+  padding: 10px 22px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.3s;
 }
 
 .back-btn:hover {
-  background: #3ab0ff;
+  background: #3c84c3;
   color: #14161e;
-  box-shadow: 0 0 12px #3ab0ff, 0 0 24px rgba(58,176,255,0.5);
+}
+
+/* ---------- Controls ---------- */
+.controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 25px;
+}
+
+.auto-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.auto-controls input {
+  width: 80px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #becc80;
+  background: #14161e;
+  color: #e0e0e0;
+  text-align: center;
+}
+
+/* ---------- Timer ---------- */
+.timer-container {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  margin-top: 20px;
+}
+
+.timer-svg {
+  transform: rotate(-90deg);
+}
+
+.timer-bg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 10;
+}
+
+.timer-progress {
+  fill: none;
+  stroke: #64c4da;
+  stroke-width: 10;
+  stroke-dasharray: 283; /* 2πr for r=45 */
+  stroke-dashoffset: 283;
+  transition: stroke-dashoffset 0.1s linear;
+
+  animation: shimmer 1.5s infinite alternate;
+}
+
+@keyframes shimmer {
+  0% {
+    stroke: #64c4da;
+  }
+  50% {
+    stroke: #7fd9ea; /* slightly lighter blue */
+  }
+  100% {
+    stroke: #64c4da;
+  }
+}
+
+.timer-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.7rem;
+  color: #edd4ae;
+
+  /* Glow effect with reduced intensity */
+  text-shadow: 
+    0 0 3.6px rgba(237, 212, 174, 0.2),
+    0 0 2.5px rgba(240, 198, 138, 0.15),
+    0 0 2px rgba(240, 198, 138, 0.2),
+    0 0 4.5px rgba(255, 215, 160, 0.2.8);
+
+  transition: text-shadow 0.5s ease;
+}
+
+
+
+/* ---------- Metronome ---------- */
+.metronome {
+  position: absolute;
+  color: rgb(230, 215, 204);
+  top: 20px;
+  right: 80px;
+  background: rgba(31, 130, 173, 0.2);
+  padding: 20px;
+  border: 1px solid #788892;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 0 15px rgba(58, 176, 255, 0.3);
+}
+
+.metro-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.metro-controls input,
+.metro-controls select {
+  background: #14161e;
+  color: #e0e0e0;
+  border: 1px solid #a78a58;
+  border-radius: 8px;
+  padding: 5px 8px;
+  text-align: center;
+}
+
+
+
+
+
+
+/* Shift exercise container to the left */
+body {
+  display: flex;
+  justify-content: flex-start; /* align left */
+  padding-left: 60px; /* optional, add some gap from left wall */
+  position: relative;
+}
+
+
+
+
+
+
+
+/* Sliding sheet music container */
+.sheet-container {
+  position: fixed;
+  bottom: -150px; /* start partially hidden */
+  right: 70px;
+  width: 620px;
+  height: 290px;
+  max-height: 70%;
+  background: rgba(217, 203, 185, 0.95); /* base paper color */
+  color: #14161e;
+  border: 1px solid #d1b590;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5);
+  overflow-y: auto;
+  z-index: 100;
+  transform: translateY(100%);
+  transition: transform 0.8s ease-in-out, box-shadow 0.4s ease;
+
+  p {
+    color: #0a0a09;
+  }
+
+  /* Peek just a little */
+  transform: translateY(100%);
+  transition: transform 0.8s ease-in-out, box-shadow 0.4s ease;
+  z-index: 100;
+}
+
+
+/* Paper texture overlay */
+.sheet-container::after {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: url('../../assets/paper.png') repeat;
+  background-size: cover; /* cover whole container */
+  opacity: 0.5; /* subtle transparency */
+  pointer-events: none; /* allow clicks through */
+  border-radius: 20px;
+  z-index: 0; /* behind content but above background */
+}
+
+
+/* Open state: fully visible */
+.sheet-container.open {
+  transform: translateY(-250px);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+  transform: perspective(700px) rotateX(0deg) rotateY(-6deg) translateY(-250px);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+}
+
+
+/* Tab button */
+.sheet-tab {
+  position: fixed;
+  bottom: 20px;
+  right: 30px;
+  background: rgba(20, 22, 30, 0.9);
+  color: #e27e69;
+  padding: 8px 16px;
+  border-radius: 10px;
+  border: 1px solid #b29c77;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 0 0 6px rgba(58, 176, 255, 0.2);
+  z-index: 101;
+  transition: all 0.3s ease;
+}
+
+.sheet-tab:hover {
+  background: #dac9a4;
+  color: #14161e;
+  transform: scale(1.03);
+}
+
+
+
+
+
+/* 🌈 Rainbow Toggle Button */
+#toggleRainbow {
+  position: fixed;
+  top: 8px;
+  left: 1060px;
+  padding: 5px 15px;
+  font-size: 10px;
+  font-weight: bold;
+  border: 2px solid #b29c77;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.5);
+  color: #fff;
+  background: rgba(100, 0, 0, 0.7); /* Default: red tone for OFF */
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+  z-index: 150;
+}
+
+/* 🟥 OFF State */
+#toggleRainbow.off {
+  background: rgba(150, 30, 30, 0.8);
+  border-color: #ff5c5c;
+  box-shadow: 0 0 15px rgba(255, 50, 50, 0.5);
+}
+
+#toggleRainbow.off::after {
+  content: "OFF";
+  display: block;
+  font-size: 12px;
+  font-weight: normal;
+  color: #ffaaaa;
+  margin-top: 2px;
+}
+
+/* 🟩 ON State */
+#toggleRainbow.on {
+  background: rgba(30, 120, 60, 0.8);
+  border-color: #66ffb2;
+  box-shadow: 0 0 20px rgba(50, 255, 150, 0.6);
+}
+
+#toggleRainbow.on::after {
+  content: "ON";
+  display: block;
+  font-size: 12px;
+  font-weight: normal;
+  color: #b4ffc9;
+  margin-top: 2px;
+}
+
+/* Hover effects */
+#toggleRainbow:hover {
   transform: scale(1.05);
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.3);
 }

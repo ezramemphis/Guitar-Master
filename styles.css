@@ -569,6 +569,7 @@ body, html {
 
 
 .song-select {
+  display: none; /* hides the select without breaking JS */
   background: rgba(255, 255, 255, 0.1);
   color: #fff;
   font-family: 'sci-fi', monospace;
