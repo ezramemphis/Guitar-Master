@@ -57,12 +57,16 @@ const MODE_INTERVALS = {
   "Locrian dim 7": [1,2,1,2,1,2,3]
 };
 
+// --------------------- //
+// 🎲 GLOBAL LEVEL SET   //
+// --------------------- //
+let currentLevel = 1;
+
 // 🎲 HELPER: Find note in ENHARMONICS by letter
 function pickNoteByLetter(semitone, letter) {
   const group = ENHARMONICS[semitone];
-  // pick the note that starts with the correct letter
   const note = group.find(n => n[0].toUpperCase() === letter);
-  return note || group[0]; // fallback if missing (rare)
+  return note || group[0];
 }
 
 // 🎲 GENERATE SCALE (full-proof consecutive letters)
@@ -74,7 +78,7 @@ function generateScale(root, mode) {
 
   for (let i = 0; i < intervals.length; i++) {
     semitone = (semitone + intervals[i]) % 12;
-    letterIndex = (letterIndex + 1) % 7; // next consecutive letter
+    letterIndex = (letterIndex + 1) % 7;
     const nextLetter = LETTERS[letterIndex];
     scale.push(pickNoteByLetter(semitone, nextLetter));
   }
@@ -84,25 +88,37 @@ function generateScale(root, mode) {
 }
 
 // 🎲 RANDOM SCALE
-function randomScale(level = 1) {
+function randomScale(level = currentLevel) {
   const modePool = LEVEL_SCALES[level] || LEVEL_SCALES[1];
   const mode = modePool[Math.floor(Math.random() * modePool.length)];
-
   const rootGroup = ENHARMONICS[Math.floor(Math.random() * ENHARMONICS.length)];
   const root = rootGroup[Math.floor(Math.random() * rootGroup.length)];
-
   const scale = generateScale(root, mode);
   return { name: `${root} ${mode}`, notes: scale.join(" - ") };
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // ---------------------------- //
 // ⚙️ DOM + Auto Mode + Timer   //
 // ---------------------------- //
-
-let autoInterval = null;
 let timerInterval = null;
 let remainingTime = 0;
+let totalTime = 5;
 
 window.addEventListener("DOMContentLoaded", () => {
   const output = document.getElementById("scale-output");
@@ -112,23 +128,32 @@ window.addEventListener("DOMContentLoaded", () => {
   const timerText = document.getElementById("timer-text");
   const timerCircle = document.querySelector(".timer-progress");
   const fullDash = 283;
-  let totalTime = parseFloat(intervalInput.value);
 
   const updateTimerVisual = () => {
-    const seconds = Math.max(1, Math.ceil(remainingTime));
+    const seconds = Math.max(0, Math.ceil(remainingTime));
     timerText.textContent = seconds;
-    const offset = fullDash * (0 - remainingTime / totalTime);
+    const offset = fullDash * (1 - remainingTime / totalTime);
     timerCircle.style.strokeDashoffset = offset;
   };
 
-  const startTimer = (seconds) => {
+  const startAutoMode = (seconds) => {
+    clearInterval(timerInterval);
     totalTime = seconds;
     remainingTime = seconds;
-    clearInterval(timerInterval);
+
+    // first scale immediately
+    const data = randomScale();
+    output.innerHTML = `<strong>${data.name}</strong><br>${data.notes}`;
+    updateTimerVisual();
+
     timerInterval = setInterval(() => {
       remainingTime -= 0.1;
+      if (remainingTime <= 0) {
+        const data = randomScale();
+        output.innerHTML = `<strong>${data.name}</strong><br>${data.notes}`;
+        remainingTime = totalTime;
+      }
       updateTimerVisual();
-      if (remainingTime <= 0) remainingTime = seconds;
     }, 100);
   };
 
@@ -138,21 +163,14 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 
   autoBtn.addEventListener("click", () => {
-    if (autoInterval) {
-      clearInterval(autoInterval);
+    if (timerInterval) {
       clearInterval(timerInterval);
-      autoInterval = null;
+      timerInterval = null;
       timerCircle.style.strokeDashoffset = fullDash;
       autoBtn.textContent = "▶ Start Auto";
     } else {
       const seconds = Math.max(1, parseFloat(intervalInput.value) || 5);
-      const run = () => {
-        const data = randomScale();
-        output.innerHTML = `<strong>${data.name}</strong><br>${data.notes}`;
-      };
-      run();
-      startTimer(seconds);
-      autoInterval = setInterval(run, seconds * 1000);
+      startAutoMode(seconds);
       autoBtn.textContent = "⏸ Stop Auto";
     }
   });
@@ -163,7 +181,6 @@ window.addEventListener("DOMContentLoaded", () => {
   const tempoInput = document.getElementById("tempoInput");
   const soundSelect = document.getElementById("metroSound");
   const metroBtn = document.getElementById("metroToggle");
-
   let metroInterval = null;
   let click = new Audio(`../../assets/sounds/metronome1.wav`);
 
@@ -192,21 +209,24 @@ window.addEventListener("DOMContentLoaded", () => {
   // ------------------- //
   const sheetTab = document.querySelector('.sheet-tab');
   const sheetContainer = document.querySelector('.sheet-container');
-  sheetTab.addEventListener('click', () => {
-    sheetContainer.classList.toggle('open');
-  });
+  if(sheetTab && sheetContainer) {
+    sheetTab.addEventListener('click', () => {
+      sheetContainer.classList.toggle('open');
+    });
+  }
 
   // ------------------- //
   // 🌈 Rainbow Toggle   //
   // ------------------- //
   const toggleBtn = document.getElementById('toggleRainbow');
   const exerciseContainer = document.querySelector('.exercise-container');
-
-  toggleBtn.classList.add('off');
-  toggleBtn.addEventListener('click', () => {
-    exerciseContainer.classList.toggle('rainbow');
-    const isOn = exerciseContainer.classList.contains('rainbow');
-    toggleBtn.classList.toggle('on', isOn);
-    toggleBtn.classList.toggle('off', !isOn);
-  });
+  if(toggleBtn && exerciseContainer) {
+    toggleBtn.classList.add('off');
+    toggleBtn.addEventListener('click', () => {
+      exerciseContainer.classList.toggle('rainbow');
+      const isOn = exerciseContainer.classList.contains('rainbow');
+      toggleBtn.classList.toggle('on', isOn);
+      toggleBtn.classList.toggle('off', !isOn);
+    });
+  }
 });

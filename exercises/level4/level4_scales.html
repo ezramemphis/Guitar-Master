@@ -61,35 +61,19 @@
 
    <button id="toggleRainbow" class="main-btn">🌈 Toggle Rainbow</button>
 
+   <!-- Tab button to toggle sheet -->
+<div class="sheet-tab">Sheet Music ▼</div>
+
+<!-- Sliding Sheet Music Container -->
+<div id="sheetContainer" class="sheet-container">
+  <h3>Sheet Music</h3>
+</div>
+
   <script>
-    // Override auto generation for Level 2
-    window.addEventListener("DOMContentLoaded", () => {
-      const genBtn = document.getElementById("generate-btn");
-      const output = document.getElementById("scale-output");
-      const autoBtn = document.getElementById("autoBtn");
-      const intervalInput = document.getElementById("intervalInput");
-      let autoInterval = null;
+  window.addEventListener("DOMContentLoaded", () => {
+    currentLevel = 4;
+  });
+</script>
 
-      const updateOutput = () => {
-        const data = randomScale(4); // Level 4
-        output.innerHTML = `<strong>${data.name}</strong><br>${data.notes}`;
-      };
-
-      genBtn.addEventListener("click", updateOutput);
-
-      autoBtn.addEventListener("click", () => {
-        if (autoInterval) {
-          clearInterval(autoInterval);
-          autoInterval = null;
-          autoBtn.textContent = "▶ Start Auto";
-        } else {
-          const interval = Math.max(1, parseFloat(intervalInput.value) || 5) * 1000;
-          updateOutput();
-          autoInterval = setInterval(updateOutput, interval);
-          autoBtn.textContent = "⏸ Stop Auto";
-        }
-      });
-    });
-  </script>
 </body>
 </html>

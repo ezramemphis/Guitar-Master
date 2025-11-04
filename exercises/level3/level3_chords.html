@@ -5,19 +5,76 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Level 3 - Chords</title>
   <link rel="stylesheet" href="../../exercises.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <script src="../../chords.js" defer></script>
 </head>
 <body>
   <div class="exercise-container">
-    <h1>This is Chords Level 3</h1>
+    <h1>Level 3 — Chords</h1>
     <p>
-      This page will contain interactive exercises for practicing chords in Level 3. 
-      Eventually, you’ll see tutorials, examples, and exercises to help you learn and master chords step by step.
+      Practice identifying and playing chords.  
+      Click <strong>Generate Chord</strong> to get a random chord,  
+      or enable <strong>Auto Mode</strong> to cycle through them automatically.
     </p>
+
+    <!-- Output Display -->
+    <div id="chord-output" class="scale-output">Press “Generate Chord” to begin!</div>
+
+    <!-- Controls -->
+    <div class="controls">
+      <button id="generate-btn" class="main-btn">🎵 Generate Chord</button>
+
+      <div class="auto-controls">
+        <label for="intervalInput">Auto-generate every (seconds):</label>
+        <input type="number" id="intervalInput" value="5" min="1" />
+        <button id="autoBtn" class="main-btn">▶ Start Auto</button>
+      </div>
+
+      <!-- Timer Circle -->
+      <div class="timer-container">
+        <svg class="timer-svg" width="100" height="100">
+          <circle class="timer-bg" cx="50" cy="50" r="45" />
+          <circle class="timer-progress" cx="50" cy="50" r="45" />
+        </svg>
+        <div id="timer-text" class="timer-text">5</div>
+      </div>
+    </div>
+
     <button onclick="window.history.back()" class="back-btn">← Back</button>
   </div>
 
-   <button id="toggleRainbow" class="main-btn">🌈 Toggle Rainbow</button>
-   
+  <!-- Metronome -->
+  <div class="metronome">
+    <h3>Metronome</h3>
+    <div class="metro-controls">
+      <label>Tempo:</label>
+      <input type="number" id="tempoInput" value="100" min="30" max="300" />
+      <label>Sound:</label>
+      <select id="metroSound">
+        <option value="1">Metronome 1</option>
+        <option value="2">Metronome 2</option>
+        <option value="3">Metronome 3</option>
+        <option value="4">Metronome 4</option>
+      </select>
+      <button id="metroToggle" class="main-btn">Start</button>
+    </div>
+  </div>
+
+  <button id="toggleRainbow" class="main-btn">🌈 Toggle Rainbow</button>
+
+  <!-- Tab button to toggle sheet -->
+<div class="sheet-tab">Sheet Music ▼</div>
+
+<!-- Sliding Sheet Music Container -->
+<div id="sheetContainer" class="sheet-container">
+  <h3>Sheet Music</h3>
+</div>
+
+<script>
+  window.addEventListener("DOMContentLoaded", () => {
+    currentLevel = 3; 
+  });
+</script>
+
+  
 </body>
 </html>

@@ -1,55 +1,93 @@
+// --------------------- //
+// 🎵 ARPEGGIO GENERATOR //
+// --------------------- //
+
+// 🎵 ENHARMONICS
 const ENHARMONICS = [
   ["C"], ["C#", "Db"], ["D"], ["D#", "Eb"], ["E", "Fb"], ["F", "E#"],
   ["F#", "Gb"], ["G"], ["G#", "Ab"], ["A"], ["A#", "Bb"], ["B", "Cb"]
 ];
 
-const CHORD_TYPES = ["maj", "min", "dim", "aug", "7", "m7", "maj7"];
+const NOTE_TO_SEMITONE = ENHARMONICS.reduce((acc, group, i) => {
+  group.forEach(n => acc[n] = i);
+  return acc;
+}, {});
 
-// Generate a random arpeggio
-function randomArpeggio() {
+// ---------------------- //
+// 🧭 LEVEL ARPEGGIO POOLS //
+// ---------------------- //
+const LEVEL_ARPEGGIOS = {
+  1: [
+    "Maj7", "Min7", "Dom7", "Min7b5",
+    "Dom7sus4", "7#5", "Dim7 (1 octave from root)"
+  ],
+  2: [
+    "Min(Maj7)", "Maj7#5", "Maj7b5", "Min7#5",
+    "7b5", "Dim(Maj7) (1 octave from root)"
+  ],
+  3: [
+    "Maj7", "Min7", "Dom7", "Min7b5",
+    "Dom7sus4", "7#5", "Dim7 (1 octave from any chord tone)"
+  ],
+  4: [
+    "Min(Maj7)", "Maj7#5", "Maj7b5", "Min7#5",
+    "7b5", "Dim(Maj7) (1 octave from any chord tone)"
+  ]
+};
+
+// --------------------- //
+// 🎯 GLOBAL LEVEL SET   //
+// --------------------- //
+let currentLevel = 1;
+
+// ----------------------------- //
+// 🎲 RANDOM ARPEGGIO GENERATOR //
+// ----------------------------- //
+function randomArpeggio(level = currentLevel) {
+  const pool = LEVEL_ARPEGGIOS[level] || LEVEL_ARPEGGIOS[1];
+  const type = pool[Math.floor(Math.random() * pool.length)];
   const rootGroup = ENHARMONICS[Math.floor(Math.random() * ENHARMONICS.length)];
   const root = rootGroup[Math.floor(Math.random() * rootGroup.length)];
-  const type = CHORD_TYPES[Math.floor(Math.random() * CHORD_TYPES.length)];
-  return { name: `${root} ${type} arpeggio`, notes: getArpeggioNotes(root, type).join(" - ") };
+  const notes = getArpeggioNotes(root, type);
+  return { name: `${root} ${type} arpeggio`, notes: notes.join(" - ") };
 }
 
-// Generate notes for the arpeggio (same as chord but sequential)
+// --------------------- //
+// 🎶 NOTE CONSTRUCTION  //
+// --------------------- //
 function getArpeggioNotes(root, type) {
-  const rootIndex = ENHARMONICS.findIndex(g => g.includes(root));
-  const notes = [root];
-  switch(type){
-    case "maj":
-      notes.push(ENHARMONICS[(rootIndex + 4) % 12][0], ENHARMONICS[(rootIndex + 7) % 12][0]);
-      break;
-    case "min":
-      notes.push(ENHARMONICS[(rootIndex + 3) % 12][0], ENHARMONICS[(rootIndex + 7) % 12][0]);
-      break;
-    case "dim":
-      notes.push(ENHARMONICS[(rootIndex + 3) % 12][0], ENHARMONICS[(rootIndex + 6) % 12][0]);
-      break;
-    case "aug":
-      notes.push(ENHARMONICS[(rootIndex + 4) % 12][0], ENHARMONICS[(rootIndex + 8) % 12][0]);
-      break;
-    case "7":
-      notes.push(ENHARMONICS[(rootIndex + 4) % 12][0], ENHARMONICS[(rootIndex + 7) % 12][0], ENHARMONICS[(rootIndex + 10) % 12][0]);
-      break;
-    case "m7":
-      notes.push(ENHARMONICS[(rootIndex + 3) % 12][0], ENHARMONICS[(rootIndex + 7) % 12][0], ENHARMONICS[(rootIndex + 10) % 12][0]);
-      break;
-    case "maj7":
-      notes.push(ENHARMONICS[(rootIndex + 4) % 12][0], ENHARMONICS[(rootIndex + 7) % 12][0], ENHARMONICS[(rootIndex + 11) % 12][0]);
-      break;
-  }
-  return notes;
+  const rootIndex = NOTE_TO_SEMITONE[root];
+  const steps = {
+    maj7: [0, 4, 7, 11],
+    min7: [0, 3, 7, 10],
+    dom7: [0, 4, 7, 10],
+    min7b5: [0, 3, 6, 10],
+    dom7sus4: [0, 5, 7, 10],
+    "7#5": [0, 4, 8, 10],
+    dim7: [0, 3, 6, 9],
+    "min(maj7)": [0, 3, 7, 11],
+    "maj7#5": [0, 4, 8, 11],
+    "maj7b5": [0, 4, 6, 11],
+    "min7#5": [0, 3, 8, 10],
+    "7b5": [0, 4, 6, 10],
+    "dim(maj7)": [0, 3, 6, 11]
+  };
+
+  // Find matching interval set
+  const match = Object.keys(steps).find(k =>
+    type.toLowerCase().includes(k.replace(/[()]/g, ""))
+  );
+
+  const semis = steps[match] || steps.maj7;
+  return semis.map(s => ENHARMONICS[(rootIndex + s) % 12][0]);
 }
 
 // ---------------------------- //
 // ⚙️ DOM + Auto Mode + Timer   //
 // ---------------------------- //
-
-let autoInterval = null;
 let timerInterval = null;
 let remainingTime = 0;
+let totalTime = 5;
 
 window.addEventListener("DOMContentLoaded", () => {
   const output = document.getElementById("arpeggio-output");
@@ -58,25 +96,31 @@ window.addEventListener("DOMContentLoaded", () => {
   const intervalInput = document.getElementById("intervalInput");
   const timerText = document.getElementById("timer-text");
   const timerCircle = document.querySelector(".timer-progress");
-
   const fullDash = 283;
 
   const updateTimerVisual = () => {
-    const seconds = Math.max(1, Math.ceil(remainingTime));
+    const seconds = Math.max(0, Math.ceil(remainingTime));
     timerText.textContent = seconds;
     const offset = fullDash * (1 - remainingTime / totalTime);
     timerCircle.style.strokeDashoffset = offset;
   };
 
-  let totalTime = parseFloat(intervalInput.value);
-
-  const startTimer = (seconds) => {
+  const startAutoMode = (seconds) => {
+    clearInterval(timerInterval);
     totalTime = seconds;
     remainingTime = seconds;
-    clearInterval(timerInterval);
+
+    const data = randomArpeggio();
+    output.innerHTML = `<strong>${data.name}</strong><br>${data.notes}`;
+    updateTimerVisual();
+
     timerInterval = setInterval(() => {
       remainingTime -= 0.1;
-      if (remainingTime <= 0) remainingTime = seconds;
+      if (remainingTime <= 0) {
+        const data = randomArpeggio();
+        output.innerHTML = `<strong>${data.name}</strong><br>${data.notes}`;
+        remainingTime = totalTime;
+      }
       updateTimerVisual();
     }, 100);
   };
@@ -87,41 +131,70 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 
   autoBtn.addEventListener("click", () => {
-    if (autoInterval) {
-      clearInterval(autoInterval);
+    if (timerInterval) {
       clearInterval(timerInterval);
-      autoInterval = null;
-      timerCircle.style.strokeDashoffset = 283;
+      timerInterval = null;
+      timerCircle.style.strokeDashoffset = fullDash;
       autoBtn.textContent = "▶ Start Auto";
     } else {
       const seconds = Math.max(1, parseFloat(intervalInput.value) || 5);
-      const run = () => {
-        const data = randomArpeggio();
-        output.innerHTML = `<strong>${data.name}</strong><br>${data.notes}`;
-      };
-      run();
-      startTimer(seconds);
-      autoInterval = setInterval(run, seconds * 1000);
+      startAutoMode(seconds);
       autoBtn.textContent = "⏸ Stop Auto";
     }
   });
-});
 
+  // ------------------- //
+  // 🕓 Metronome Setup  //
+  // ------------------- //
+  const tempoInput = document.getElementById("tempoInput");
+  const soundSelect = document.getElementById("metroSound");
+  const metroBtn = document.getElementById("metroToggle");
+  let metroInterval = null;
+  let click = new Audio(`../../assets/sounds/metronome1.wav`);
 
+  const playClick = () => {
+    click.currentTime = 0;
+    click.play();
+  };
 
-const toggleBtn = document.getElementById('toggleRainbow');
-const exerciseContainer = document.querySelector('.exercise-container');
+  metroBtn.addEventListener("click", () => {
+    if (metroInterval) {
+      clearInterval(metroInterval);
+      metroInterval = null;
+      metroBtn.textContent = "Start";
+    } else {
+      click = new Audio(`../../assets/sounds/metronome${soundSelect.value}.wav`);
+      const bpm = Math.max(30, parseInt(tempoInput.value) || 100);
+      const interval = (60 / bpm) * 1000;
+      playClick();
+      metroInterval = setInterval(playClick, interval);
+      metroBtn.textContent = "Stop";
+    }
+  });
 
-toggleBtn.classList.add('off'); // start OFF
+  // ------------------- //
+  // 📝 Sheet Music Toggle //
+  // ------------------- //
+  const sheetTab = document.querySelector('.sheet-tab');
+  const sheetContainer = document.querySelector('.sheet-container');
+  if (sheetTab && sheetContainer) {
+    sheetTab.addEventListener('click', () => {
+      sheetContainer.classList.toggle('open');
+    });
+  }
 
-toggleBtn.addEventListener('click', () => {
-  // Toggle rainbow state on the container
-  exerciseContainer.classList.toggle('rainbow');
-
-  // Determine if rainbow mode is active
-  const isOn = exerciseContainer.classList.contains('rainbow');
-
-  // Update button visuals
-  toggleBtn.classList.toggle('on', isOn);
-  toggleBtn.classList.toggle('off', !isOn);
+  // ------------------- //
+  // 🌈 Rainbow Toggle   //
+  // ------------------- //
+  const toggleBtn = document.getElementById('toggleRainbow');
+  const exerciseContainer = document.querySelector('.exercise-container');
+  if (toggleBtn && exerciseContainer) {
+    toggleBtn.classList.add('off');
+    toggleBtn.addEventListener('click', () => {
+      exerciseContainer.classList.toggle('rainbow');
+      const isOn = exerciseContainer.classList.contains('rainbow');
+      toggleBtn.classList.toggle('on', isOn);
+      toggleBtn.classList.toggle('off', !isOn);
+    });
+  }
 });
