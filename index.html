@@ -29,42 +29,67 @@
     </div>
 
     <!-- Header Panel -->
-    <div class="header-panel">
-      <div class="header-title">Guitar Master</div>
-      <div class="header-inner">
-        <button id="diceBtn">🎲</button>
-        <div class="song-slider"><div class="slider-text" id="sliderText">No song playing</div></div>
-        <button id="muteBtn">🔈</button>
-        <select id="songSelect" class="song-select" title="Select a song">
-  <option value="">🎵</option>
-</select>
+<div class="header-panel">
+  <div class="header-title">Guitar Master</div>
 
-
-      </div>
-
-      <div class="social-icons">
-        <a href="https://instagram.com/ezramemphis" target="_blank" class="social-icon">
-          <img src="assets/instagram.svg" alt="Instagram" />
-        </a>
-        <a href="https://www.youtube.com/@ezramemphis" target="_blank" class="social-icon">
-          <img src="assets/youtube.svg" alt="YouTube" />
-        </a>
-        <a href="https://discord.gg/42krr7nh" target="_blank" class="social-icon">
-          <img src="assets/discord.svg" alt="Discord" />
-        </a>
-        <a href="https://www.linkedin.com/in/ezra-bennett-4b9260275/" target="_blank" class="social-icon">
-          <img src="assets/linkedin.svg" alt="LinkedIn" />
-        </a>
-        <a href="https://twitter.com" target="_blank" class="social-icon">
-          <img src="assets/twitter.svg" alt="Twitter" />
-        </a>
-      </div>
+  <div class="header-inner">
+    <button id="diceBtn">🎲</button>
+    <div class="song-slider">
+      <div class="slider-text" id="sliderText">No song playing</div>
     </div>
+    <button id="muteBtn">🔈</button>
+
+    <select id="songSelect" class="song-select" title="Select a song">
+      <option value="">🎵</option>
+    </select>
+
+    <!-- Journal Button -->
+    <button id="journalBtn" title="Open Practice Log">📓</button>
   </div>
+
+  <div class="social-icons">
+    <a href="https://instagram.com/ezramemphis" target="_blank" class="social-icon">
+      <img src="assets/instagram.svg" alt="Instagram" />
+    </a>
+    <a href="https://www.youtube.com/@ezramemphis" target="_blank" class="social-icon">
+      <img src="assets/youtube.svg" alt="YouTube" />
+    </a>
+    <a href="https://discord.gg/42krr7nh" target="_blank" class="social-icon">
+      <img src="assets/discord.svg" alt="Discord" />
+    </a>
+    <a href="https://www.linkedin.com/in/ezra-bennett-4b9260275/" target="_blank" class="social-icon">
+      <img src="assets/linkedin.svg" alt="LinkedIn" />
+    </a>
+    <a href="https://twitter.com" target="_blank" class="social-icon">
+      <img src="assets/twitter.svg" alt="Twitter" />
+    </a>
+  </div>
+</div>
+
+<!-- Practice Log Container -->
+<div id="practiceLogOverlay" class="practice-log-overlay">
+  <div class="practice-log">
+    <div class="practice-log-header">
+      <h2>Practice Log</h2>
+      <span id="closeJournal" class="close-btn">✖</span>
+    </div>
+
+    <div class="practice-log-date-nav">
+      <button id="prevDay" class="day-btn">⬅</button>
+      <span id="logDate"></span>
+      <button id="nextDay" class="day-btn">➡</button>
+    </div>
+
+    <textarea id="practiceText" placeholder="Write about your practice today..."></textarea>
+  </div>
+</div>
+
+
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.min.js"></script>
   <script src="script.js"></script>
+  <script src="admin.js"></script>
 
   <!-- Panel Buttons Script -->
   <script>
@@ -187,6 +212,89 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 </script>
+
+<!-- ✅ Journal Overlay Script (Inline, Always Works) -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+  const journalBtn = document.getElementById("journalBtn");
+  const overlay = document.getElementById("practiceLogOverlay");
+  const closeBtn = document.getElementById("closeJournal");
+  const logDateSpan = document.getElementById("logDate");
+  const textarea = document.getElementById("practiceText");
+  const prevBtn = document.getElementById("prevDay");
+  const nextBtn = document.getElementById("nextDay");
+
+  let currentDate = new Date();
+
+  // Audio LPF setup using Web Audio API
+  let audioContext, audioSource, lpf;
+  const bgAudio = document.querySelector("audio"); // assume your audio element exists
+
+  if (bgAudio) {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    audioSource = audioContext.createMediaElementSource(bgAudio);
+    lpf = audioContext.createBiquadFilter();
+    lpf.type = "lowpass";
+    lpf.frequency.setValueAtTime(22050, audioContext.currentTime); // start fully open
+    audioSource.connect(lpf).connect(audioContext.destination);
+  }
+
+  function formatReadable(date) {
+    return date.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  }
+
+  function formatKey(date) {
+    return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+  }
+
+  function loadDate(date) {
+    currentDate = date;
+    logDateSpan.textContent = formatReadable(date);
+    textarea.value = localStorage.getItem(`practiceLog-${formatKey(date)}`) || "";
+  }
+
+  function showOverlay() {
+    overlay.classList.remove("hide");
+    overlay.classList.add("show");
+    if (lpf) lpf.frequency.linearRampToValueAtTime(1000, audioContext.currentTime + 0.5); // dull audio
+  }
+
+  function hideOverlay() {
+    overlay.classList.add("hide");
+    overlay.classList.remove("show");
+    if (lpf) lpf.frequency.linearRampToValueAtTime(22050, audioContext.currentTime + 0.5); // restore audio
+    setTimeout(() => overlay.style.display = "none", 500); // wait for fade
+  }
+
+  // Open journal
+  journalBtn.addEventListener("click", () => {
+    loadDate(new Date());
+    overlay.style.display = "flex";
+    requestAnimationFrame(showOverlay);
+  });
+
+  // Close journal
+  closeBtn.addEventListener("click", hideOverlay);
+
+  // Day navigation
+  prevBtn.addEventListener("click", () => {
+    const newDate = new Date(currentDate);
+    newDate.setDate(newDate.getDate() - 1);
+    loadDate(newDate);
+  });
+
+  nextBtn.addEventListener("click", () => {
+    const newDate = new Date(currentDate);
+    newDate.setDate(newDate.getDate() + 1);
+    loadDate(newDate);
+  });
+
+  // Auto-save
+  textarea.addEventListener("input", () => {
+    localStorage.setItem(`practiceLog-${formatKey(currentDate)}`, textarea.value);
+  });
+});
+  </script>
 
 
 </body>

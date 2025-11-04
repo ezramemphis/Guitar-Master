@@ -203,3 +203,10 @@ songProgress.addEventListener("input", () => {
 
 
 
+
+
+
+
+
+
+
