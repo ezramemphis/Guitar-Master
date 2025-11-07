@@ -18,8 +18,26 @@
 
   <p>
     The point of putting this together was just to test out VexFlow and see how it works again, since it has been
-    a minute since I've touched it. And also because I want to make sure that I can get maxmimum control over it,
+    a minute since I've touched it. And also because I want to make sure that I can get maximum control over it,
     so that when I plan on incorporating it with my current exercise javascripts, I can do it relatively smoothly.
+  </p>
+
+  <p>
+    I know it's going to be quite tricky regardless though lol. So I’m just going to feed the sheet 
+    music function the notes from whatever scale gets generated, instead of having it pick random notes. 
+    When the scale generator gives me something like C - D - E - F - G - A - B - C, I’ll split that into an 
+    array and turn each note into a VexFlow StaveNote. Then whenever a new scale is generated, I'll call my draw 
+    function so the sheet music updates automatically. Basically I’m just swapping out the random-note part for the real 
+    scale notes.
+  </p>
+
+   <p>
+    First, I’ll write a drawScale(scaleArray) function that only handles the VexFlow stuff. 
+    Then I’ll hook that up so that the scale generator also triggers the drawing. Once I confirm the staff 
+    is showing the right notes, then I’ll deal with playback one step at a time so it doesn’t turn into chaos. 
+    <br>
+    <br>
+     It'll be a lot of work, but man it'll be so worth it seeing that auto generated sheet music, shoot.
   </p>
 </body>
 </html>

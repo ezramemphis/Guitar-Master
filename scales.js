@@ -14,7 +14,7 @@ const NOTE_TO_SEMITONE = ENHARMONICS.reduce((acc, group, i) => {
   return acc;
 }, {});
 
-// 🎵 LEVEL SCALE POOLS
+// Level Scale Pools
 const LEVEL_SCALES = {
   1: ["Ionian","Dorian","Phrygian","Lydian","Mixolydian","Aeolian","Locrian"],
   2: ["Melodic Minor","Dorian b2","Lydian Augmented","Lydian b7","Mixolydian b6","Aeolian b5","Altered"],
@@ -22,15 +22,17 @@ const LEVEL_SCALES = {
   4: ["Harmonic Major","Dorian b5","Phrygian b4","Lydian diminished","Mixolydian b2","Lydian Augmented #2","Locrian dim 7"]
 };
 
-// 🎵 SCALE INTERVALS
+// Scale Intervals
 const MODE_INTERVALS = {
-  "Ionian": [2,2,1,2,2,2,1],
+  "Ionian": [2,2,1,2,2,2,1], // The first interval is the distance to the 2nd degree (C -> D = 2 semitones)
   "Dorian": [2,1,2,2,2,1,2],
-  "Phrygian": [1,2,2,2,1,2,2],
+  "Phrygian": [1,2,2,2,1,2,2], // Phrygian has a flat 2, hence only 1 semitone to the 2nd degree (C -> Db = 1 semitone)
   "Lydian": [2,2,2,1,2,2,1],
   "Mixolydian": [2,2,1,2,2,1,2],
   "Aeolian": [2,1,2,2,1,2,2],
   "Locrian": [1,2,2,1,2,2,2],
+
+  // Another cool thing to remember, the different modes are basically the same "scale" starting from different degrees. So the interval sets will be identical, but just shifted accordingly to match the mode. And this is the same case for all of the other mode variants.
 
   "Melodic Minor": [2,1,2,2,2,2,1],
   "Dorian b2": [1,2,2,2,2,1,2],
@@ -40,7 +42,7 @@ const MODE_INTERVALS = {
   "Aeolian b5": [2,1,2,1,2,2,2],
   "Altered": [1,2,1,2,2,2,2],
 
-  "Harmonic Minor": [2,1,2,2,1,3,1],
+  "Harmonic Minor": [2,1,2,2,1,3,1], // Harmonic minor has an augmented second (3 semitones) between the 6th and 7th degrees. So that was a fun little pain to integrate properly with note names. But we locked in.
   "Locrian natural 6": [1,2,2,1,2,2,2],
   "Ionian #5": [2,2,1,2,3,1,1],
   "Dorian #4": [2,1,3,1,2,2,1],
