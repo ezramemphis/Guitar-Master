@@ -168,3 +168,22 @@ adminPlayBtn.addEventListener("click", () => {
   currentAudio.addEventListener("ended", playRandomSong);
   updateSlider();
 });
+
+// Close admin panel / password modal with Escape
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    // hide password modal if open
+    if (passwordModal && passwordModal.style.display !== "none") {
+      passwordModal.style.display = "none";
+    }
+
+    // hide admin panel if open
+    if (adminPanelVisible || (adminPanel && adminPanel.style.display !== "none")) {
+      adminPanelVisible = false;
+      adminPanel.style.display = "none";
+    }
+
+    // optional: return focus to body so keyboard input isn't trapped
+    document.activeElement.blur?.();
+  }
+});

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Chord Identification Challenge</title>
+  <link rel="stylesheet" href="../arcade.css" />
+  <link rel="stylesheet" href="mini-game.css" />
+
+</head>
+<body>
+  <div class="game-container">
+    <h1>Chord Identification Challenge</h1>
+    <div id="chord-display" class="chord-display">Loading...</div>
+
+    <div class="note-button-container">
+       <div class="note-row">
+      <button class="note-btn" data-chord="major">Major</button>
+      <button class="note-btn" data-chord="minor">Minor</button>
+      <button class="note-btn" data-chord="diminished">Diminished</button>
+      <button class="note-btn" data-chord="augmented">Augmented</button>
+    </div>
+
+    <div class="score-timer">
+      <span>Score: <span id="score">0</span></span>
+      <span>Time: <span id="timer">30</span>s</span>
+    </div>
+  </div>
+
+  <script src="mini-game.js"></script>
+</body>
+</html>

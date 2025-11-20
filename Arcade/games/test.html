@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Random Note with VexFlow</title>
+  <style>
+    #vf-container {
+      width: 300px;
+      height: 150px;
+      border: 1px solid #ccc;
+      margin-bottom: 10px;
+    }
+  </style>
+  <script src="https://unpkg.com/vexflow@4.1.0/build/cjs/vexflow.js"></script>
+</head>
+<body>
+  <div id="vf-container"></div>
+  <button id="generate-btn">Generate Random Note</button>
+
+  <script>
+    const VF = Vex.Flow;
+
+    const container = document.getElementById("vf-container");
+    const button = document.getElementById("generate-btn");
+
+    const notes = ["c", "d", "e", "f", "g", "a", "b"];
+
+    function drawNote(noteName) {
+      container.innerHTML = ""; // Clear previous SVG
+
+      const renderer = new VF.Renderer(container, VF.Renderer.Backends.SVG);
+      renderer.resize(300, 150);
+      const context = renderer.getContext();
+
+      const stave = new VF.Stave(10, 40, 280);
+      stave.addClef("treble");
+      stave.setContext(context).draw();
+
+      const note = new VF.StaveNote({
+        clef: "treble",
+        keys: [`${noteName}/4`],
+        duration: "q"
+      });
+
+      const voice = new VF.Voice({ num_beats: 1, beat_value: 4 });
+      voice.addTickables([note]);
+
+      new VF.Formatter().joinVoices([voice]).format([voice], 200);
+      voice.draw(context, stave);
+    }
+
+    button.addEventListener("click", () => {
+      const randomNote = notes[Math.floor(Math.random() * notes.length)];
+      drawNote(randomNote);
+    });
+
+    // Draw first note on load
+    drawNote("c");
+  </script>
+</body>
+</html>

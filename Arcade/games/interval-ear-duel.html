@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Interval Ear Duel</title>
+  <link rel="stylesheet" href="../arcade.css" />
+
+  <style>
+    body {
+      background-color: #000;
+      color: #00ffcc;
+      font-family: 'Press Start 2P', monospace;
+      margin: 0;
+      padding: 0;
+    }
+
+    .game-container {
+      text-align: center;
+      padding-top: 80px;
+      color: #00ffcc;
+    }
+
+    #interval-display {
+      font-size: 80px;
+      margin-bottom: 40px;
+      margin-top: 100px;
+      /* Hide text because we play audio */
+      visibility: hidden;
+      height: 0;
+    }
+
+    .score-timer {
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    /* Bottom button container like note-name-blitz */
+    .interval-button-container {
+      position: absolute;
+      bottom: 60px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 0;
+      background-color: rgba(0, 0, 0, 0.6);
+      border-top: 2px solid #00ffcc;
+      box-shadow: 0 -2px 10px #00ffcc;
+    }
+
+    .interval-row {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .option-btn {
+      padding: 15px 20px;
+      font-size: 18px;
+      font-family: 'Press Start 2P', monospace;
+      background-color: #222;
+      color: #00ffcc;
+      border: 2px solid #00ffcc;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+
+    .option-btn:hover {
+      background-color: #00ffcc;
+      color: #000;
+      transform: scale(1.1);
+    }
+
+    /* Back arrow styling */
+    .back-arrow {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 32px;
+      color: #00ffcc;
+      text-decoration: none;
+      transition: transform 0.2s ease;
+      font-family: 'Press Start 2P', monospace;
+      user-select: none;
+      z-index: 100;
+    }
+
+    .back-arrow:hover {
+      transform: scale(1.2);
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <a href="../arcade.html" class="back-arrow" title="Back to Arcade">←</a>
+
+  <div class="game-container">
+    <h1>🎵 Interval Ear Duel 🎵</h1>
+    <div class="score-timer">
+      Score: <span id="score">0</span> | Time: <span id="timer">30</span>s
+    </div>
+    <div id="interval-display">🎼</div>
+  </div>
+
+  <div class="interval-button-container">
+    <div class="interval-row">
+      <button class="option-btn" data-interval="m2">m2</button>
+      <button class="option-btn" data-interval="M2">M2</button>
+      <button class="option-btn" data-interval="m3">m3</button>
+      <button class="option-btn" data-interval="M3">M3</button>
+      <button class="option-btn" data-interval="P4">P4</button>
+      <button class="option-btn" data-interval="Tritone">Tritone</button>
+      <button class="option-btn" data-interval="P5">P5</button>
+      <button class="option-btn" data-interval="m6">m6</button>
+      <button class="option-btn" data-interval="M6">M6</button>
+      <button class="option-btn" data-interval="m7">m7</button>
+      <button class="option-btn" data-interval="M7">M7</button>
+      <button class="option-btn" data-interval="octave">Octave</button>
+    </div>
+  </div>
+
+  <script src="interval-ear-duel.js"></script>
+</body>
+</html>

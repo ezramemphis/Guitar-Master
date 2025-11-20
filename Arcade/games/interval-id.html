@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Interval Identification</title>
+  <link rel="stylesheet" href="../arcade.css" />
+  <link rel="stylesheet" href="mini-game.css">
+  <script src="https://unpkg.com/vexflow@4.1.0/build/cjs/vexflow.js"></script>
+</head>
+<body>
+  <a href="../arcade.html" class="back-arrow" title="Back to Arcade">←</a>
+
+  <div id="start-modal" class="modal">
+    <div class="modal-content">
+      <h2>Select Clef</h2>
+      <label><input type="radio" name="clef" value="treble" checked> Treble</label>
+      <label><input type="radio" name="clef" value="bass"> Bass</label>
+      <button id="start-game-btn">Start Game</button>
+    </div>
+  </div>
+
+  <div class="game-container">
+    <h1>🎵 Interval Inspector 🎵</h1>
+    <div class="score-timer">
+      Score: <span id="score">0</span> | Time: <span id="timer">60</span>s
+    </div>
+
+  
+    <div id="vf-container" class="staff-display"></div>
+    <div class="info-bar"></div>
+
+    <div class="note-button-container">
+      <div class="note-row">
+      <button class="note-button">Unison</button>
+      <button class="note-button">m2</button>
+      <button class="note-button">M2</button>
+      <button class="note-button">m3</button>
+      <button class="note-button">M3</button>
+      <button class="note-button">P4</button>
+      <button class="note-button">aug4</button>
+      <button class="note-button">P5</button>
+      <button class="note-button">m6</button>
+      <button class="note-button">M6</button>
+      <button class="note-button">m7</button>
+      <button class="note-button">Maj7</button>
+      <button class="note-button">Octave</button>
+    </div>
+  </div>
+
+  <script src="interval-id.js"></script>
+</body>
+</html>

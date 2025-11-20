@@ -26,6 +26,13 @@
     <div class="panel">
       <div class="panel-glass"></div>
       <div class="panel-buttons" id="panelButtons"></div>
+
+      <a href="Arcade/arcade.html" class="arcade-container">
+  <span class="arcade-text">Music Theory Arcade</span>
+  <img src="assets/arcade_icon.png" alt="Arcade">
+</a>
+
+
     </div>
 
     <!-- Header Panel -->
@@ -170,8 +177,8 @@
 
   <script>
 document.addEventListener("DOMContentLoaded", () => {
-  const hoverSoundFile = "assets/sounds/ice.wav"; // hover sound
-  const clickSoundFile = "assets/sounds/thin_click.wav"; // click sound
+  const hoverSoundFile = "assets/sounds/ice.wav"; 
+  const clickSoundFile = "assets/sounds/thin_click.wav"; 
 
   function playHoverSound() {
     const sound = new Audio(hoverSoundFile);
@@ -202,16 +209,30 @@ document.addEventListener("DOMContentLoaded", () => {
   const observer = new MutationObserver(attachPanelButtonSounds);
   observer.observe(panelButtonsContainer, { childList: true });
 
-  // Social icons hover + click sounds
+  // Social icons
   const socialIcons = document.querySelectorAll(".social-icon");
   socialIcons.forEach(icon => {
     icon.removeEventListener("mouseenter", playHoverSound);
     icon.removeEventListener("click", playClickSound);
-    icon.addEventListener("mouseenter", playHoverSound); // hover
-    icon.addEventListener("click", playClickSound); // click
+    icon.addEventListener("mouseenter", playHoverSound);
+    icon.addEventListener("click", playClickSound);
   });
+
+  // ⭐ Arcade hover sound
+  const arcadeHoverSound = new Audio("assets/sounds/arcade_hover.wav");
+  arcadeHoverSound.volume = 0.6;
+
+  const arcadeBtn = document.querySelector(".arcade-container");
+  if (arcadeBtn) {
+    arcadeBtn.addEventListener("mouseenter", () => {
+      arcadeHoverSound.currentTime = 0;
+      arcadeHoverSound.play().catch(() => {});
+    });
+  }
 });
 </script>
+
+
 
 <!-- ✅ Journal Overlay Script (Inline, Always Works) -->
   <script>

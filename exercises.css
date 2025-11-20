@@ -90,7 +90,7 @@ body::after {
   filter: hue-rotate(0deg);
 }
 
-/* 🌈 Enable rainbow effect by adding `.rainbow` to .exercise-container */
+/* 🌈 Enable rainbow effect */
 .exercise-container.rainbow::before {
   animation: 
     borderShift 14s linear infinite, 
@@ -104,7 +104,7 @@ body::after {
   100% { background-position: 0% 50%; }
 }
 
-/* 🌈 Hue rotation animation */
+/* Hue rotation animation (this is what lets it cycle through the rainbow) */
 @keyframes hueCycle {
   0% { filter: hue-rotate(0deg); }
   100% { filter: hue-rotate(360deg); }

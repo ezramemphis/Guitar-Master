@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Note Name Blitz</title>
+  <link rel="stylesheet" href="../arcade.css" />
+  <link rel="stylesheet" href="mini-game.css" />
+  <script src="https://unpkg.com/vexflow@4.1.0/build/cjs/vexflow.js"></script>
+</head>
+<body>
+  <a href="../arcade.html" class="back-arrow" title="Back to Arcade">←</a>
+
+  <div class="game-container">
+    <h1>🎵 Note Name Blitz 🎵</h1>
+    <div class="score-timer">
+      Score: <span id="score">0</span> | Time: <span id="timer">60</span>s
+    </div>
+
+    <div id="vf-container"></div>
+
+    <div class="note-button-container">
+      <div class="note-row">
+        <button class="note-button">C♯</button>
+        <button class="note-button">D♯</button>
+        <button class="note-button">E♯</button>
+        <button class="note-button">F♯</button>
+        <button class="note-button">G♯</button>
+        <button class="note-button">A♯</button>
+        <button class="note-button">B♯</button>
+      </div>
+      <div class="note-row">
+        <button class="note-button">C</button>
+        <button class="note-button">D</button>
+        <button class="note-button">E</button>
+        <button class="note-button">F</button>
+        <button class="note-button">G</button>
+        <button class="note-button">A</button>
+        <button class="note-button">B</button>
+      </div>
+      <div class="note-row">
+        <button class="note-button">C♭</button>
+        <button class="note-button">D♭</button>
+        <button class="note-button">E♭</button>
+        <button class="note-button">F♭</button>
+        <button class="note-button">G♭</button>
+        <button class="note-button">A♭</button>
+        <button class="note-button">B♭</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="start-modal">
+    <h2>Get as many notes right before the timer runs out!</h2>
+    <div class="clef-select">
+      <label>
+        <input type="radio" name="clef" value="treble" checked> Treble Clef
+      </label>
+      <label>
+        <input type="radio" name="clef" value="bass"> Bass Clef
+      </label>
+    </div>
+    <button id="start-game-btn">Start Game</button>
+  </div>
+
+  <script src="note-name-blitz.js"></script>
+</body>
+</html>
