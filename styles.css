@@ -779,3 +779,11 @@ body, html {
 }
 
 
+
+
+
+
+/* Cuz there's no need for the user to be able to select anything on the screen and it was making me pissy*/
+* {
+  user-select: none;
+}
