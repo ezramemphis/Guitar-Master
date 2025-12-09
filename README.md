@@ -2,6 +2,8 @@
 
 So just to start off, I will say that I really should have just taken little notes and logs of what I did each day, so that it wouldn't be so much recap work that I'm doing right now trying to put together the whole README once the project is mostly done. But for the most part I'll be able to walk back through each step of how this project was put together, the difficulties at each step, and onwards. So anyways, let's get into it. 
 
+[Guitar Master](https://ezramemphis.github.io/Guitar-Master/)
+
 # Exercises
 
 ## Exercises - HTML
@@ -29,6 +31,18 @@ Extra:
 - Toggle-rainbow button (was bored and wanted the border around the exercise container to do a rainbow)
 
 I pretty much copied this exact layout for every other exercise, making slight tweaks for wording like at the top of the exerice-container when it says what level it is, but other than that it's identical. 
+
+Also since all the scale exercises share the same javascript file, I needed to add a little way for the HTML to tell the Javascript "Hey I'm this level, I need these scales". And so I integrated it so that at the bottom of the HTML I can call this script to make it work. 
+
+```Javascript
+<script>
+  window.addEventListener("DOMContentLoaded", () => {
+    currentLevel = 2;
+  });
+</script>
+```
+
+Just a fairly simple setup, and it keeps the organization very sleek. 
 
 ## Exercises - Javascript     
 
@@ -597,6 +611,15 @@ The navigation works by first displaying a set of level buttons generated throug
 
 So now with this little script, we make our buttons using javascript, which is a little less straight forward than using straight HTML, but it makes the opportunities to scale the project so high.
 
+
+# Recap - Struggles & Setbacks
+
+Overall this project was really fun to work on. I've had this idea since even the beginning of being here at Berklee, just a really cool tool that with a little more polishing I could definitely see people using to actually practice. 
+
+Honestly my biggest struggles were just trying to figure out why the javascript was not communicating with the HTML. Setting up the HTML was simple enough, and editing the CSS was pretty simple because you can see all the changes being doing as you change it and save. With javascript, it was just about being maticulous, closely following resources, and hoping that it all worked together seemlessly. And little by little as I began to understand the language a little more it became easier to do simple things
+
+There is still so much that I want to do with this project, and I can tell that this project is going to follow me for a good bit until I do something cool with it. So we'll have to see where it all goes. 
+
 ## Sources and Guides to Do This
 
 ### Javascript
@@ -622,3 +645,6 @@ So now with this little script, we make our buttons using javascript, which is a
 [backdrop-filter (for glass / blur effects)](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/backdrop-filter)
 
 [CSS transitions / smooth transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Transitions/Using?)
+
+
+AI Large Model References Are Coming Soon
