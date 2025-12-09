@@ -787,3 +787,49 @@ body, html {
 * {
   user-select: none;
 }
+
+
+
+/* Right-side practice stats */
+.practice-stats {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  width: 220px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+
+  background: rgba(20, 22, 33, 0.7);
+  padding: 15px;
+  border-radius: 15px;
+  backdrop-filter: blur(8px);
+  color: white;
+  box-shadow: 0 0 20px rgba(0,0,0,0.4);
+}
+
+
+.practice-stats h3 {
+  margin: 0 0 10px;
+  font-size: 1.2rem;
+  text-align: center;
+}
+
+.stat-box {
+  background: #2a2e42;
+  padding: 12px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.stat-title {
+  font-size: 1rem;
+  opacity: 0.8;
+}
+
+.stat-value {
+  font-size: 1.4rem;
+  margin-top: 6px;
+  font-weight: bold;
+}

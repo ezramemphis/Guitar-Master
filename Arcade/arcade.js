@@ -111,3 +111,51 @@ document.getElementById('nextGame').addEventListener('click', () => {
 
 
 
+
+//music 
+
+const tracks = [
+  'audio/you-got-it.mp3',
+  'audio/i-want.mp3',
+  'audio/alesis.mp3',
+  'audio/rylee.mp3',
+  'audio/small-hope.mp3',
+];
+
+const bgMusic = document.getElementById('bg-music');
+const muteBtn = document.getElementById('mute-btn');
+
+// Play a random track and handle mute
+function playRandomTrack() {
+  const randomIndex = Math.floor(Math.random() * tracks.length);
+  bgMusic.src = tracks[randomIndex];
+
+  // Check saved mute state
+  const isMuted = localStorage.getItem('bgMusicMuted') === 'true';
+  bgMusic.muted = isMuted;
+  muteBtn.textContent = isMuted ? '🔇' : '🔊';
+
+  // Start playing
+  bgMusic.volume = 0.2;
+  bgMusic.play().catch(() => {
+    // Some browsers require user interaction
+    const onUserInteract = () => {
+      bgMusic.play();
+      window.removeEventListener('click', onUserInteract);
+    };
+    window.addEventListener('click', onUserInteract);
+  });
+}
+
+// Toggle mute
+function toggleMute() {
+  bgMusic.muted = !bgMusic.muted;
+  localStorage.setItem('bgMusicMuted', bgMusic.muted);
+  muteBtn.textContent = bgMusic.muted ? '🔇' : '🔊';
+}
+
+muteBtn.addEventListener('click', toggleMute);
+
+// Start music on page load
+window.addEventListener('load', playRandomTrack);
+

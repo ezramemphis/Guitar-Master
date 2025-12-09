@@ -1,75 +1,91 @@
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
 body {
-  margin: 0;
-  padding: 0;
-  font-family: 'Press Start 2P', monospace;
-  color: #fff;
-  background: url('arcade-assets/arcade-background.jpg') no-repeat center center fixed;
-  background-size: cover;
-  overflow: hidden;
-}
+      margin: 0;
+      padding: 0;
+      font-family: 'Press Start 2P', monospace;
+      color: #fff;
+      background: url('arcade-assets/arcade-background.jpg') no-repeat center center fixed;
+      background-size: cover;
+      overflow: hidden;
+    }
 
-.arcade-container {
-  text-align: center;
-  padding-top: 40px;
-}
 
-.arcade-title {
-  font-size: 2em;
-  color: #ff00cc;
-  text-shadow: 0 0 10px #ff00cc, 0 0 20px #ff00cc;
-  margin-bottom: 50px;
-}
+/* Arcade Container & Title */
+    .arcade-container {
+      position: relative;
+      width: 100%;
+      height: 350px;
+      padding: 20px 0;
+      text-align: center;
+    }
 
-.arcade-machines {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 40px;
-  padding: 120px 20px 20px 20px;
-}
+    .arcade-title {
+      font-size: 2rem;
+      color: #df23aa;
+      text-align: center;
+      text-shadow: 0 0 10px #2709be, 0 0 20px #ff00cc;
+      margin-bottom: 50px;
+      transition: transform 0.1s ease;
+      will-change: transform;
+      user-select: none;
+    }
 
-.machine {
-  position: relative;
-  width: 160px;
-  height: 220px;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
+/* Arcade Machines */
+    .arcade-machines {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      white-space: nowrap;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 40px;
+      padding: 120px 20px 20px 20px;
+    }
 
-.machine img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  transition: transform 0.2s ease, filter 0.2s ease;
-}
+    .machine {
+      position: relative;
+      width: 160px;
+      height: 220px;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
 
-.machine:hover img {
-  transform: scale(1.1);
-  filter: brightness(1.2) drop-shadow(0 0 10px rgba(255, 0, 255, 0.5));
-}
+ .machine img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      pointer-events: none;
+      user-select: none;
+      transition: transform 0.2s ease, filter 0.2s ease;
+    }
 
-.machine .label {
-  position: absolute;
-  top: -30px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.75);
-  color: #00ffcc;
-  padding: 6px 12px;
-  border-radius: 8px;
-  font-size: 10px;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  pointer-events: none;
-  white-space: nowrap;
-  border: 1px solid #00ffcc;
-}
+    .machine:hover img {
+      transform: scale(1.1);
+      filter: brightness(1.2) drop-shadow(0 0 10px rgba(255, 0, 255, 0.5));
+    }
 
-.machine:hover .label {
-  opacity: 1;
-}
+ .machine .label {
+      position: absolute;
+      top: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.75);
+      color: #00ffcc;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 10px;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      pointer-events: none;
+      white-space: nowrap;
+      border: 1px solid #00ffcc;
+    }
+
+    .machine:hover .label {
+      opacity: 1;
+    }
 
 /* Adjust positioning to form a subtle arc */
 
@@ -149,42 +165,47 @@ body {
   text-overflow: ellipsis;
 }
 
-.leaderboard {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background-image: linear-gradient(to bottom, #666666, #000000);
-  color: white;
-  padding: 10px 15px;
-  border-radius: 12px;
-  font-family: 'Press Start 2P', monospace;
-  max-width: 280px;
-
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
-}
+ /* Leaderboard */
+    .leaderboard {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background-image: linear-gradient(to bottom, #666, #000);
+      color: white;
+      padding: 10px 15px;
+      border-radius: 12px;
+      font-family: 'Press Start 2P', monospace;
+      max-width: 280px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.8);
+    }
 
 .leaderboard h3 {
-  margin: 0 0 8px 0;
-  font-size: 1rem;
-  text-align: center;
-}
+      margin: 0 0 8px 0;
+      font-size: 1rem;
+      text-align: center;
+    }
 
-.leaderboard ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  font-size: 0.9rem;
-  max-height: 240px;
-  overflow-y: auto;
-}
+    .leaderboard ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      font-size: 0.9rem;
+      max-height: 240px;
+      overflow-y: auto;
+    }
 
-.leaderboard li {
-  margin-bottom: 4px;
-}
+    .leaderboard li {
+      margin-bottom: 4px;
+      font-size: 0.6rem;
+      color: #fff;
+      line-height: 1.8;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
 /* Arrow buttons */
 .leaderboard button {
@@ -236,10 +257,9 @@ body {
 }
 
 .leaderboard-content {
-  max-width: 200px;
-  text-align: center;
-  word-wrap: break-word;
-}
+      text-align: center;
+      word-wrap: break-word;
+    }
 
 #leaderboard-title {
   font-size: 0.9rem;
@@ -247,12 +267,54 @@ body {
   line-height: 1.2;
 }
 
-#visualizer {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: -1;
-  opacity: 0.4; /* was 0.2 – now it's punchier */
-  pointer-events: none;
-  filter: brightness(1.5) saturate(1.2) blur(0.5px);
-}
+.leaderboard button.arrow {
+      font-size: 1.4rem;
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+      user-select: none;
+      padding: 4px 10px;
+      border-radius: 6px;
+      transition: background-color 0.3s ease;
+    }
+
+    .leaderboard button.arrow:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .left-arrow { float: left; }
+    .right-arrow { float: right; }
+
+
+
+   /* Individual machine positioning for subtle arc */
+    #interval-inspector, #rhythm-echo { margin-top: 60px; }
+    #note-name-blitz, #interval-ear-duel { margin-top: 30px; }
+    #chord-id-challenge { margin-top: 0; }
+
+
+    /* Mute button */
+    #mute-btn {
+      position: fixed;
+      bottom: 15px;
+      right: 15px;
+      background: rgba(0, 0, 0, 0.5);
+      border: none;
+      color: #00ffcc;
+      font-size: 24px;
+      cursor: pointer;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.3s ease;
+      z-index: 1000;
+      user-select: none;
+    }
+
+    #mute-btn:hover {
+      background: rgba(0, 0, 0, 0.8);
+    }

@@ -23,7 +23,7 @@ body {
   position: relative; /* needed for pseudo-element */
 }
 
-/* ---------- Subtle metal texture overlay as 3x3 grid with zoom animation ---------- */
+/* Metal Texture Overlay */
 body::after {
   content: "";
   position: fixed;
@@ -471,4 +471,28 @@ body {
 #toggleRainbow:hover {
   transform: scale(1.05);
   box-shadow: 0 0 25px rgba(255, 255, 255, 0.3);
+}
+
+
+
+
+
+#practiceTimerOverlay {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 160px;
+  background: rgba(20, 22, 33, 0.9);
+  color: white;
+  padding: 12px;
+  border-radius: 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  z-index: 9999;
+  box-shadow: 0 0 15px rgba(0,0,0,0.5);
+}
+#practiceTimerOverlay h4 {
+  margin: 0 0 8px 0;
+  font-size: 1rem;
+  text-align: center;
 }

@@ -2,51 +2,59 @@
 // ADMIN PANEL TOGGLE WITH PASSWORD (Shift + Cmd/Ctrl + K)
 // ================================
 let adminPanelVisible = false;
-const ADMIN_PASSWORD = "i think i have a big fat crush on taylor, he is so cute";
+const ADMIN_PASSWORD = "test";
 
-// Create admin panel element
+// Helper: quick styling function
+const css = (el, styles) => Object.assign(el.style, styles);
+
+// ================================
+// ADMIN PANEL
+// ================================
 const adminPanel = document.createElement("div");
-adminPanel.style.position = "fixed";
-adminPanel.style.top = "50%";
-adminPanel.style.left = "50%";
-adminPanel.style.transform = "translate(-50%, -50%)";
-adminPanel.style.background = "rgba(20,20,30,0.95)";
-adminPanel.style.color = "#fff";
-adminPanel.style.padding = "20px";
-adminPanel.style.borderRadius = "15px";
-adminPanel.style.boxShadow = "0 0 20px rgba(0,0,0,0.5)";
-adminPanel.style.zIndex = "9999";
-adminPanel.style.display = "none";
-adminPanel.style.flexDirection = "column";
-adminPanel.style.minWidth = "320px";
-adminPanel.style.gap = "10px";
-adminPanel.style.fontFamily = "sans-serif";
+css(adminPanel, {
+  position: "fixed",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  background: "#222",
+  color: "#fff",
+  padding: "15px",
+  borderRadius: "8px",
+  display: "none",
+  flexDirection: "column",
+  gap: "10px",
+  zIndex: 9999,
+  fontFamily: "sans-serif",
+  minWidth: "250px"
+});
 
 // Title
 const adminTitle = document.createElement("h3");
-adminTitle.textContent = "🎛 Admin Panel";
+adminTitle.textContent = "Admin Panel";
+css(adminTitle, { margin: "0", fontSize: "18px" });
 adminPanel.appendChild(adminTitle);
 
 // Song dropdown
 const adminSongSelect = document.createElement("select");
-songs.forEach(songPath => {
-  const option = document.createElement("option");
-  option.value = songPath;
-  option.textContent = songPath.split("/").pop().replace(".mp3", "");
-  adminSongSelect.appendChild(option);
+songs.forEach(path => {
+  const o = document.createElement("option");
+  o.value = path;
+  o.textContent = path.split("/").pop().replace(".mp3", "");
+  adminSongSelect.appendChild(o);
 });
 adminPanel.appendChild(adminSongSelect);
 
 // Play button
 const adminPlayBtn = document.createElement("button");
-adminPlayBtn.textContent = "Play Selected Song";
-adminPlayBtn.style.padding = "8px 12px";
-adminPlayBtn.style.borderRadius = "8px";
-adminPlayBtn.style.border = "none";
-adminPlayBtn.style.cursor = "pointer";
-adminPlayBtn.style.background = "#e27e69";
-adminPlayBtn.style.color = "#fff";
-adminPlayBtn.style.fontWeight = "bold";
+adminPlayBtn.textContent = "Play";
+css(adminPlayBtn, {
+  padding: "6px 10px",
+  cursor: "pointer",
+  border: "1px solid #444",
+  background: "#333",
+  color: "#fff",
+  borderRadius: "4px"
+});
 adminPanel.appendChild(adminPlayBtn);
 
 document.body.appendChild(adminPanel);
@@ -55,97 +63,90 @@ document.body.appendChild(adminPanel);
 // PASSWORD MODAL
 // ================================
 const passwordModal = document.createElement("div");
-passwordModal.style.position = "fixed";
-passwordModal.style.top = "0";
-passwordModal.style.left = "0";
-passwordModal.style.width = "100%";
-passwordModal.style.height = "100%";
-passwordModal.style.background = "rgba(0,0,0,0.75)";
-passwordModal.style.display = "flex";
-passwordModal.style.alignItems = "center";
-passwordModal.style.justifyContent = "center";
-passwordModal.style.zIndex = "9998";
-passwordModal.style.flexDirection = "column";
-passwordModal.style.gap = "10px";
-passwordModal.style.fontFamily = "sans-serif";
-passwordModal.style.display = "none";
+css(passwordModal, {
+  position: "fixed",
+  inset: 0,
+  display: "none",
+  alignItems: "center",
+  justifyContent: "center",
+  background: "rgba(0,0,0,0.4)",
+  zIndex: 9998,
+  fontFamily: "sans-serif"
+});
 
-// Inner modal box
 const modalBox = document.createElement("div");
-modalBox.style.background = "#14161e";
-modalBox.style.padding = "20px";
-modalBox.style.borderRadius = "15px";
-modalBox.style.display = "flex";
-modalBox.style.flexDirection = "column";
-modalBox.style.gap = "10px";
-modalBox.style.minWidth = "320px";
-modalBox.style.alignItems = "center";
+css(modalBox, {
+  background: "#222",
+  padding: "15px",
+  borderRadius: "8px",
+  display: "flex",
+  flexDirection: "column",
+  gap: "10px",
+  minWidth: "240px",
+  color: "#fff"
+});
 
 // Modal title
-const modalTitle = document.createElement("h3");
+const modalTitle = document.createElement("div");
 modalTitle.textContent = "Enter Admin Password";
-modalTitle.style.color = "#fff";
 modalBox.appendChild(modalTitle);
 
 // Password input
 const passwordInput = document.createElement("input");
 passwordInput.type = "password";
-passwordInput.placeholder = "Password";
-passwordInput.style.padding = "10px";
-passwordInput.style.borderRadius = "8px";
-passwordInput.style.border = "none";
-passwordInput.style.width = "100%";
+css(passwordInput, { padding: "6px", borderRadius: "4px", border: "1px solid #444" });
 modalBox.appendChild(passwordInput);
 
 // Submit button
 const submitBtn = document.createElement("button");
 submitBtn.textContent = "Submit";
-submitBtn.style.padding = "10px 15px";
-submitBtn.style.borderRadius = "8px";
-submitBtn.style.border = "none";
-submitBtn.style.cursor = "pointer";
-submitBtn.style.background = "#e27e69";
-submitBtn.style.color = "#fff";
-submitBtn.style.fontWeight = "bold";
+css(submitBtn, {
+  padding: "6px 10px",
+  cursor: "pointer",
+  background: "#333",
+  color: "#fff",
+  border: "1px solid #444",
+  borderRadius: "4px"
+});
 modalBox.appendChild(submitBtn);
 
 passwordModal.appendChild(modalBox);
 document.body.appendChild(passwordModal);
 
-// Show modal function
+// ================================
+// SHOW/HIDE MODAL + PANEL
+// ================================
 function showPasswordModal() {
   passwordModal.style.display = "flex";
   passwordInput.value = "";
   passwordInput.focus();
 }
 
-// Hide modal function
 function hidePasswordModal() {
   passwordModal.style.display = "none";
 }
 
-// Handle submit
 submitBtn.addEventListener("click", () => {
   if (passwordInput.value === ADMIN_PASSWORD) {
     hidePasswordModal();
     adminPanelVisible = true;
     adminPanel.style.display = "flex";
   } else {
-    alert("Incorrect password!");
-    passwordInput.value = "";
-    passwordInput.focus();
+    alert("Incorrect password");
   }
 });
 
-// Press Enter to submit
-passwordInput.addEventListener("keydown", (e) => {
+// Enter key submits
+passwordInput.addEventListener("keydown", e => {
   if (e.key === "Enter") submitBtn.click();
 });
 
-// Admin keyboard shortcut
-document.addEventListener("keydown", (e) => {
-  const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
-  if (e.shiftKey && ((isMac && e.metaKey && e.code === "KeyK") || (!isMac && e.ctrlKey && e.code === "KeyK"))) {
+// Keyboard shortcut
+document.addEventListener("keydown", e => {
+  const mac = navigator.platform.includes("Mac");
+  const shortcut = mac ? e.metaKey : e.ctrlKey;
+
+  if (shortcut && e.shiftKey && e.code === "KeyK") {
     if (adminPanelVisible) {
       adminPanelVisible = false;
       adminPanel.style.display = "none";
@@ -155,35 +156,25 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
-// Play selected song manually
+// Escape key closes everything
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") {
+    adminPanel.style.display = "none";
+    passwordModal.style.display = "none";
+    adminPanelVisible = false;
+  }
+});
+
+// Play song
 adminPlayBtn.addEventListener("click", () => {
-  const selectedSong = adminSongSelect.value;
-  if (!selectedSong) return;
+  const s = adminSongSelect.value;
+  if (!s) return;
 
   if (currentAudio) currentAudio.pause();
-  currentAudio = new Audio(selectedSong);
+  currentAudio = new Audio(s);
   currentAudio.volume = isMuted ? 0 : 0.6;
-  sliderText.textContent = selectedSong.split("/").pop().replace(".mp3", "");
+  sliderText.textContent = s.split("/").pop().replace(".mp3", "");
   currentAudio.play();
   currentAudio.addEventListener("ended", playRandomSong);
   updateSlider();
-});
-
-// Close admin panel / password modal with Escape
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape") {
-    // hide password modal if open
-    if (passwordModal && passwordModal.style.display !== "none") {
-      passwordModal.style.display = "none";
-    }
-
-    // hide admin panel if open
-    if (adminPanelVisible || (adminPanel && adminPanel.style.display !== "none")) {
-      adminPanelVisible = false;
-      adminPanel.style.display = "none";
-    }
-
-    // optional: return focus to body so keyboard input isn't trapped
-    document.activeElement.blur?.();
-  }
 });

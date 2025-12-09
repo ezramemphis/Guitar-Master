@@ -12,7 +12,7 @@ const songProgress = document.getElementById("songProgress");
 // Audio State
 let currentAudio = null;
 let isMuted = localStorage.getItem("isMuted") === "true";
-let hasActivated = false;
+let hasActivated = false; // Idk why but removing this breaks the animation for the circle, for now this stays
 let isPaused = false;
 
 muteBtn.textContent = isMuted ? "🔇" : "🔈";
@@ -42,7 +42,6 @@ const songs = [
 ];
 
 // Audio Functions
-
 function playRandomSong() {
   if (currentAudio) currentAudio.pause();
 
@@ -118,16 +117,14 @@ circleWrapper.addEventListener("click", () => {
 
 
 
-// ================================
-// FIXED SMOOTH ROTATION
-// ================================
+// FIXED SMOOTH ROTATION (fixing for after left slide, works nicely)
 let isSliding = false;
 let rotationX = 0;
 let rotationY = 0;
 let targetX = 0, targetY = 0;
 let mouseX = 0, mouseY = 0;
 
-// Track mouse globally
+// Track mouse globally (make the vinyl look at the mouse)
 document.addEventListener("mousemove", e => {
   mouseX = e.clientX;
   mouseY = e.clientY;
@@ -163,9 +160,8 @@ smoothRotate();
 
 
 
-// ================================
-// SONG PROGRESS + CONTROLS
-// ================================
+
+// Song progress and controls
 function updateSlider() {
   if (!currentAudio || isPaused) return;
 
@@ -176,36 +172,166 @@ function updateSlider() {
   requestAnimationFrame(updateSlider);
 }
 
-pauseBtn.addEventListener("click", () => {
-  if (!currentAudio) return;
-  if (currentAudio.paused) {
-    currentAudio.play();
-    pauseBtn.textContent = "⏸";
-    isPaused = false;
-    updateSlider();
-  } else {
-    currentAudio.pause();
-    pauseBtn.textContent = "▶️";
-    isPaused = true;
+
+
+
+
+
+// CALENDAR
+
+const calendarBtn = document.getElementById("calendarBtn");
+const calendarOverlay = document.getElementById("calendarOverlay");
+const closeCalendar = document.getElementById("closeCalendar");
+const calendarGrid = document.getElementById("calendarGrid");
+const calendarTitle = document.getElementById("calendarTitle");
+
+const prevMonthBtn = document.getElementById("prevMonth");
+const nextMonthBtn = document.getElementById("nextMonth");
+
+let calendarDate = new Date();
+
+function renderCalendar(date) {
+  const year = date.getFullYear();
+  const month = date.getMonth();
+
+  // Set header text
+  calendarTitle.textContent = date.toLocaleDateString("en-US", {
+    month: "long",
+    year: "numeric"
+  });
+
+  // First day of month
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  calendarGrid.innerHTML = "";
+
+  // Empty placeholders
+  for (let i = 0; i < firstDay; i++) {
+    calendarGrid.innerHTML += `<div class="calendar-empty"></div>`;
+  }
+
+  // Actual days
+  for (let day = 1; day <= daysInMonth; day++) {
+    const cell = document.createElement("div");
+    cell.className = "calendar-day";
+    cell.textContent = day;
+
+    cell.addEventListener("click", () => {
+      // Load clicked date into your journal
+      const selected = new Date(year, month, day);
+      loadDate(selected);
+      calendarOverlay.style.display = "none";
+      overlay.style.display = "flex";
+    });
+
+    calendarGrid.appendChild(cell);
+  }
+}
+
+// Open calendar
+calendarBtn.addEventListener("click", () => {
+  calendarOverlay.style.display = "flex";
+  renderCalendar(calendarDate);
+});
+
+// Close calendar
+closeCalendar.addEventListener("click", () => {
+  calendarOverlay.style.display = "none";
+});
+
+// Navigation
+prevMonthBtn.addEventListener("click", () => {
+  calendarDate.setMonth(calendarDate.getMonth() - 1);
+  renderCalendar(calendarDate);
+});
+
+nextMonthBtn.addEventListener("click", () => {
+  calendarDate.setMonth(calendarDate.getMonth() + 1);
+  renderCalendar(calendarDate);
+});
+
+
+
+
+
+
+
+
+
+// --------------- PRACTICE TIME TRACKER ----------------
+function getExerciseType() {
+  const path = window.location.pathname.toLowerCase();
+  if (path.includes("scale")) return "scales";
+  if (path.includes("arpeggio")) return "arpeggios";
+  if (path.includes("chord")) return "chords";
+  return null;
+}
+
+let exercise = getExerciseType();
+let startTime = exercise ? Date.now() : null;
+
+function loadSeconds(exType) {
+  return parseInt(localStorage.getItem(`seconds-${exType}`) || "0");
+}
+
+function saveSeconds(exType, seconds) {
+  localStorage.setItem(`seconds-${exType}`, seconds);
+}
+
+// Convert seconds to HH:MM:SS
+function formatTime(seconds) {
+  const hrs = Math.floor(seconds / 3600);
+  const mins = Math.floor((seconds % 3600) / 60);
+  const secs = seconds % 60;
+  return `${hrs}:${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+}
+
+// --- Real-time counting ---
+if (exercise) {
+  setInterval(() => {
+    const now = Date.now();
+    const secondsSpent = Math.floor((now - startTime) / 1000);
+    if (secondsSpent > 0) {
+      const oldSeconds = loadSeconds(exercise);
+      saveSeconds(exercise, oldSeconds + secondsSpent);
+      startTime = Date.now(); // reset startTime
+      updatePracticeStats(); // update the overlay in real-time
+    }
+  }, 1000); // every second
+}
+
+// --- Save remaining time on page unload ---
+window.addEventListener("beforeunload", () => {
+  if (!exercise || !startTime) return;
+
+  const endTime = Date.now();
+  const secondsSpent = Math.floor((endTime - startTime) / 1000);
+
+  if (secondsSpent > 0) {
+    const oldSeconds = loadSeconds(exercise);
+    saveSeconds(exercise, oldSeconds + secondsSpent);
   }
 });
 
-songProgress.addEventListener("input", () => {
-  if (!currentAudio) return;
-  const seekTime = (songProgress.value / 100) * currentAudio.duration;
-  currentAudio.currentTime = seekTime;
-  sliderText.style.transform = `translateX(${100 - songProgress.value * 2}%)`;
+
+// --- Update Practice Log stats ---
+function updatePracticeStats() {
+  document.getElementById("scalesMinutes").textContent =
+    formatTime(loadSeconds("scales"));
+
+  document.getElementById("arpeggiosMinutes").textContent =
+    formatTime(loadSeconds("arpeggios"));
+
+  document.getElementById("chordsMinutes").textContent =
+    formatTime(loadSeconds("chords"));
+}
+
+// --- Show overlay and update stats ---
+const journalBtn = document.getElementById("journalBtn");
+const overlay = document.getElementById("practiceLogOverlay");
+
+journalBtn.addEventListener("click", () => {
+  updatePracticeStats();
+  overlay.style.display = "flex";
 });
-
-
-
-
-
-
-
-
-
-
-
-
-

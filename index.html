@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Animated Panels</title>
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="calendar.css" />
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <link rel="icon" type="image/svg+xml" href="assets/guitar.svg">
 </head>
@@ -85,11 +86,59 @@
       <button id="prevDay" class="day-btn">⬅</button>
       <span id="logDate"></span>
       <button id="nextDay" class="day-btn">➡</button>
+      <button id="calendarBtn" class="calendar-btn">📅</button>
     </div>
 
     <textarea id="practiceText" placeholder="Write about your practice today..."></textarea>
+
+    
+  </div>
+
+  <!-- Practice Time Stats (Right Side) -->
+<div class="practice-stats">
+  <h3>Practice Stats</h3>
+
+  <div class="stat-box" id="scalesStat">
+    <div class="stat-title">Scales</div>
+    <div class="stat-value" id="scalesMinutes">0 min</div>
+  </div>
+
+  <div class="stat-box" id="arpeggiosStat">
+    <div class="stat-title">Arpeggios</div>
+    <div class="stat-value" id="arpeggiosMinutes">0 min</div>
+  </div>
+
+  <div class="stat-box" id="chordsStat">
+    <div class="stat-title">Chords</div>
+    <div class="stat-value" id="chordsMinutes">0 min</div>
   </div>
 </div>
+
+</div>
+
+<!-- Calendar Overlay -->
+<div id="calendarOverlay" class="calendar-overlay">
+  <div class="calendar-window">
+
+    <!-- Header -->
+    <div class="calendar-header">
+      <button id="prevMonth" class="cal-nav-btn">⬅</button>
+      <span id="calendarTitle"></span>
+      <button id="nextMonth" class="cal-nav-btn">➡</button>
+      <span id="closeCalendar" class="close-calendar-btn">✖</span>
+    </div>
+
+    <!-- Weekday Labels -->
+    <div class="calendar-weekdays">
+      <div>Sun</div><div>Mon</div><div>Tue</div>
+      <div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+    </div>
+
+    <!-- Grid -->
+    <div class="calendar-grid" id="calendarGrid"></div>
+  </div>
+</div>
+
 
 
 
@@ -247,19 +296,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let currentDate = new Date();
 
-  // Audio LPF setup using Web Audio API
-  let audioContext, audioSource, lpf;
-  const bgAudio = document.querySelector("audio"); // assume your audio element exists
-
-  if (bgAudio) {
-    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    audioSource = audioContext.createMediaElementSource(bgAudio);
-    lpf = audioContext.createBiquadFilter();
-    lpf.type = "lowpass";
-    lpf.frequency.setValueAtTime(22050, audioContext.currentTime); // start fully open
-    audioSource.connect(lpf).connect(audioContext.destination);
-  }
-
   function formatReadable(date) {
     return date.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
   }
@@ -274,19 +310,6 @@ document.addEventListener("DOMContentLoaded", () => {
     textarea.value = localStorage.getItem(`practiceLog-${formatKey(date)}`) || "";
   }
 
-  function showOverlay() {
-    overlay.classList.remove("hide");
-    overlay.classList.add("show");
-    if (lpf) lpf.frequency.linearRampToValueAtTime(1000, audioContext.currentTime + 0.5); // dull audio
-  }
-
-  function hideOverlay() {
-    overlay.classList.add("hide");
-    overlay.classList.remove("show");
-    if (lpf) lpf.frequency.linearRampToValueAtTime(22050, audioContext.currentTime + 0.5); // restore audio
-    setTimeout(() => overlay.style.display = "none", 500); // wait for fade
-  }
-
   // Open journal
   journalBtn.addEventListener("click", () => {
     loadDate(new Date());
@@ -296,6 +319,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Close journal
   closeBtn.addEventListener("click", hideOverlay);
+
+  function hideOverlay() {
+  overlay.style.display = "none";
+}
+
 
   // Day navigation
   prevBtn.addEventListener("click", () => {

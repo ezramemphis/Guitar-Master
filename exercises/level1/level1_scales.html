@@ -17,7 +17,7 @@
       or enable <strong>Auto Mode</strong> to cycle through them automatically.
     </p>
 
-    <!-- Output Display -->
+    <!-- Output -->
     <div id="scale-output" class="scale-output">Press “Generate Scale” to begin!</div>
 
     <!-- Controls -->
@@ -55,14 +55,11 @@
         <option value="2">Metronome 2</option>
         <option value="3">Metronome 3</option>
         <option value="4">Metronome 4</option>
-        <option value="5">Metronome 5</option>
-        <option value="6">Metronome 6</option>
       </select>
       <button id="metroToggle" class="main-btn">Start</button>
     </div>
   </div>
 
-  <button id="toggleRainbow" class="main-btn">🌈 Toggle Rainbow</button>
 
 <!-- Tab button to toggle sheet -->
 <div class="sheet-tab">Sheet Music ▼</div>
@@ -70,6 +67,18 @@
 <!-- Sliding Sheet Music Container -->
 <div id="sheetContainer" class="sheet-container">
   <h3>Sheet Music</h3>
+</div>
+
+<button id="toggleRainbow" class="main-btn">🌈 Toggle Rainbow</button>
+
+
+
+<!-- Practice Timer Overlay for testing -->
+<div id="practiceTimerOverlay">
+  <h4>Practice Timer</h4>
+  <div>Scales: <span id="scalesSeconds">0</span> s</div>
+  <div>Arpeggios: <span id="arpeggiosSeconds">0</span> s</div>
+  <div>Chords: <span id="chordsSeconds">0</span> s</div>
 </div>
 
 

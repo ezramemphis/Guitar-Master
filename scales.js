@@ -1,6 +1,5 @@
-// --------------------- //
-// 🎵 SCALE GENERATOR JS //
-// --------------------- //
+
+// 🎵 SCALE GENERATOR JS 
 
 // 🎵 ENHARMONICS WITH PREFERRED SPELLINGS
 const ENHARMONICS = [
@@ -22,7 +21,7 @@ const LEVEL_SCALES = {
   4: ["Harmonic Major","Dorian b5","Phrygian b4","Lydian diminished","Mixolydian b2","Lydian Augmented #2","Locrian dim 7"]
 };
 
-// Scale Intervals
+// Modes Level 1
 const MODE_INTERVALS = {
   "Ionian": [2,2,1,2,2,2,1], // The first interval is the distance to the 2nd degree (C -> D = 2 semitones)
   "Dorian": [2,1,2,2,2,1,2],
@@ -34,6 +33,7 @@ const MODE_INTERVALS = {
 
   // Another cool thing to remember, the different modes are basically the same "scale" starting from different degrees. So the interval sets will be identical, but just shifted accordingly to match the mode. And this is the same case for all of the other mode variants.
 
+  // Modes Level 2
   "Melodic Minor": [2,1,2,2,2,2,1],
   "Dorian b2": [1,2,2,2,2,1,2],
   "Lydian Augmented": [2,2,2,2,1,2,1],
@@ -42,6 +42,7 @@ const MODE_INTERVALS = {
   "Aeolian b5": [2,1,2,1,2,2,2],
   "Altered": [1,2,1,2,2,2,2],
 
+  // Modes Level 3
   "Harmonic Minor": [2,1,2,2,1,3,1], // Harmonic minor has an augmented second (3 semitones) between the 6th and 7th degrees. So that was a fun little pain to integrate properly with note names. But we locked in.
   "Locrian natural 6": [1,2,2,1,2,2,2],
   "Ionian #5": [2,2,1,2,3,1,1],
@@ -50,6 +51,7 @@ const MODE_INTERVALS = {
   "Lydian #2": [3,1,2,2,2,1,1],
   "Altered dim 7": [1,2,1,2,1,3,2],
 
+  // Modes Level 4
   "Harmonic Major": [2,2,1,2,1,3,1],
   "Dorian b5": [2,1,2,1,2,2,2],
   "Phrygian b4": [1,2,1,2,2,2,2],
@@ -59,19 +61,17 @@ const MODE_INTERVALS = {
   "Locrian dim 7": [1,2,1,2,1,2,3]
 };
 
-// --------------------- //
-// 🎲 GLOBAL LEVEL SET   //
-// --------------------- //
+
 let currentLevel = 1;
 
-// 🎲 HELPER: Find note in ENHARMONICS by letter
+// Trying to get enharmonics to work (still kind of a mess)
 function pickNoteByLetter(semitone, letter) {
   const group = ENHARMONICS[semitone];
   const note = group.find(n => n[0].toUpperCase() === letter);
   return note || group[0];
 }
 
-// 🎲 GENERATE SCALE (full-proof consecutive letters)
+// Consecutive Note Letters Attempt
 function generateScale(root, mode) {
   const intervals = MODE_INTERVALS[mode] || [2,2,1,2,2,2,1];
   let semitone = NOTE_TO_SEMITONE[root];
@@ -89,7 +89,7 @@ function generateScale(root, mode) {
   return scale;
 }
 
-// 🎲 RANDOM SCALE
+// Scale Randomization Function
 function randomScale(level = currentLevel) {
   const modePool = LEVEL_SCALES[level] || LEVEL_SCALES[1];
   const mode = modePool[Math.floor(Math.random() * modePool.length)];
@@ -100,24 +100,8 @@ function randomScale(level = currentLevel) {
 }
 
 
+// Getting that timer working for Auto Mode
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// ---------------------------- //
-// ⚙️ DOM + Auto Mode + Timer   //
-// ---------------------------- //
 let timerInterval = null;
 let remainingTime = 0;
 let totalTime = 5;
@@ -177,9 +161,8 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // ------------------- //
-  // 🕓 Metronome Setup  //
-  // ------------------- //
+// Metronome Setup
+
   const tempoInput = document.getElementById("tempoInput");
   const soundSelect = document.getElementById("metroSound");
   const metroBtn = document.getElementById("metroToggle");
@@ -206,9 +189,7 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // ------------------- //
-  // 📝 Sheet Music Toggle //
-  // ------------------- //
+// Sheet Music (still a work in progress)
   const sheetTab = document.querySelector('.sheet-tab');
   const sheetContainer = document.querySelector('.sheet-container');
   if(sheetTab && sheetContainer) {
@@ -217,9 +198,8 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ------------------- //
-  // 🌈 Rainbow Toggle   //
-  // ------------------- //
+
+  // Rainbow Mode Toggle
   const toggleBtn = document.getElementById('toggleRainbow');
   const exerciseContainer = document.querySelector('.exercise-container');
   if(toggleBtn && exerciseContainer) {
@@ -232,3 +212,63 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+
+
+
+
+
+
+// --- Detect exercise type ---
+function getExerciseType() {
+  const path = window.location.pathname.toLowerCase();
+  if (path.includes("scale")) return "scales";
+  if (path.includes("arpeggio")) return "arpeggios";
+  if (path.includes("chord")) return "chords";
+  return null;
+}
+
+let exercise = getExerciseType();
+let startTime = exercise ? Date.now() : null;
+
+// --- Load / Save seconds from localStorage ---
+function loadSeconds(exType) {
+  return parseInt(localStorage.getItem(`seconds-${exType}`) || "0");
+}
+function saveSeconds(exType, seconds) {
+  localStorage.setItem(`seconds-${exType}`, seconds);
+}
+
+// --- Update overlay ---
+function updateOverlay() {
+  document.getElementById("scalesSeconds").textContent = loadSeconds("scales");
+  document.getElementById("arpeggiosSeconds").textContent = loadSeconds("arpeggios");
+  document.getElementById("chordsSeconds").textContent = loadSeconds("chords");
+}
+
+// --- Real-time counting ---
+if (exercise) {
+  setInterval(() => {
+    const now = Date.now();
+    const secondsSpent = Math.floor((now - startTime) / 1000);
+    if (secondsSpent > 0) {
+      const oldSeconds = loadSeconds(exercise);
+      saveSeconds(exercise, oldSeconds + secondsSpent);
+      startTime = Date.now(); // reset startTime
+      updateOverlay();
+    }
+  }, 1000); // update every second
+}
+
+// --- Save remaining time on page unload ---
+window.addEventListener("beforeunload", () => {
+  if (!exercise || !startTime) return;
+  const endTime = Date.now();
+  const secondsSpent = Math.floor((endTime - startTime) / 1000);
+  if (secondsSpent > 0) {
+    const oldSeconds = loadSeconds(exercise);
+    saveSeconds(exercise, oldSeconds + secondsSpent);
+  }
+});
+
+// --- Initial overlay update ---
+updateOverlay();

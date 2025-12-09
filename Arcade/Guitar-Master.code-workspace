@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"name": "Guitar-Master",
+			"path": ".."
+		}
+	],
+	"settings": {
+		"liveServer.settings.port": 5501,
+		"liveServer.settings.multiRootWorkspaceName": "Guitar-Master"
+	}
+}
