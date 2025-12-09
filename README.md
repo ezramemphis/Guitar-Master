@@ -144,6 +144,41 @@ For now I think this is good. I'm in and out of these notes, but things are gett
 
 So sadly I must report, I tried to implement the VexFlow but it was a little too hard and I couldn't figure it out. The issue is that the logic that I used to make the scales, chords, and arpeggios was one thing, but the way that Vexflow takes information to create notes and everything is also different. I'm not sure if there's a way for me to somehow make a type of translator to get it all to work, but I'm not sure. My plate just got completely filled and I wasn't able to get this working sadly. But the core functionality of the exercise is there. 
 
+#### Metronome
+
+The metronome was a pretty fun element to set up, because it's a fairly simple concept but it does challenge you a bit to make, it did for me certainly. The javascript ended up not being too bad. We just needed to make it where the metronome loads a sound it was given, an ability to change the sound, a button to start the click, and some sort of math function to get the BPM and all of that to work. 
+
+Anyways it took a little tweaking and messing around with but here is the working metronome javascript below.
+
+```Javascript
+const tempoInput = document.getElementById("tempoInput");
+  const soundSelect = document.getElementById("metroSound");
+  const metroBtn = document.getElementById("metroToggle");
+  let metroInterval = null;
+  let click = new Audio(`../../assets/sounds/metronome1.wav`);
+
+  const playClick = () => {
+    click.currentTime = 0;
+    click.play();
+  };
+
+  metroBtn.addEventListener("click", () => {
+    if (metroInterval) {
+      clearInterval(metroInterval);
+      metroInterval = null;
+      metroBtn.textContent = "Start";
+    } else {
+      click = new Audio(`../../assets/sounds/metronome${soundSelect.value}.wav`);
+      const bpm = Math.max(30, parseInt(tempoInput.value) || 100);
+      const interval = (60 / bpm) * 1000;
+      playClick();
+      metroInterval = setInterval(playClick, interval);
+      metroBtn.textContent = "Stop";
+    }
+  });
+```
+
+
 
 ## Exercises CSS
 
@@ -560,6 +595,30 @@ The navigation works by first displaying a set of level buttons generated throug
   </script>
   ```
 
-### Sources and Guides to Do This
+So now with this little script, we make our buttons using javascript, which is a little less straight forward than using straight HTML, but it makes the opportunities to scale the project so high.
 
-Yea I lowk need to put the sources here, working on that, my bad
+## Sources and Guides to Do This
+
+### Javascript
+
+[document.querySelector()](https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector)
+
+[document.getElementById()](https://developer.mozilla.org/en-US/docs/Web/API/Document/getElementById)
+
+[Element.classList](https://developer.mozilla.org/en-US/docs/Web/API/Element/classList)
+
+[addEventListener()](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener)
+
+[mousemove](https://developer.mozilla.org/en-US/docs/Web/API/Element/mousemove_event)
+
+[HTMLMediaElement.play()](https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/play)
+
+[Date.getFullYear()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/getFullYear)
+
+[setInterval() For Timer](https://developer.mozilla.org/en-US/docs/Web/API/setInterval)
+
+### CSS
+
+[backdrop-filter (for glass / blur effects)](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/backdrop-filter)
+
+[CSS transitions / smooth transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Transitions/Using?)
