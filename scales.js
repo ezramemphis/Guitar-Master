@@ -99,6 +99,24 @@ function randomScale(level = currentLevel) {
   return { name: `${root} ${mode}`, notes: scale.join(" - ") };
 }
 
+// Only allow certain roots for "clean" spellings (avoiding excessive sharps/flats)
+const ALLOWED_ROOTS = ["C","Db","D","Eb","E","F","Gb","G","Ab","A","Bb","B"];
+
+function randomScale(level = currentLevel) {
+  const modePool = LEVEL_SCALES[level] || LEVEL_SCALES[1];
+  const mode = modePool[Math.floor(Math.random() * modePool.length)];
+
+  // pick a root from allowed roots only
+  const rootGroup = ENHARMONICS.filter(group => group.some(n => ALLOWED_ROOTS.includes(n)));
+  const rootGroupChoice = rootGroup[Math.floor(Math.random() * rootGroup.length)];
+
+  // pick the first note in group that is allowed
+  const root = rootGroupChoice.find(n => ALLOWED_ROOTS.includes(n));
+
+  const scale = generateScale(root, mode);
+  return { name: `${root} ${mode}`, notes: scale.join(" - ") };
+}
+
 
 // Getting that timer working for Auto Mode
 

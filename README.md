@@ -93,6 +93,8 @@ genBtn.addEventListener("click", () => {
 });
 ```
 
+And now at this point, the exercise was officially functional. When we would press the generate button, we would see a scale generate and the notes that are in that scale. There ar e
+
 #### Troubleshooting Enharmonic Issues - Exercises Javascript 
 
 What I ended up doing first to get a little more control was to go back to the top of the scales javascript and add in another constant for just letters themselves 
@@ -101,12 +103,34 @@ What I ended up doing first to get a little more control was to go back to the t
 
 I knew that if I wanted to somehow get this code to behave, I was going to have to be very explicit about how I ask for things to make sure it will always work.
 
-
 As I started making more and more tweaks, I started doing some run through and check the scale outputs to see if there's any improvemenet, what percentage are still going wrong, and if so what is tripping them up. I noticed over time certain enharmonics like Cb and Fb were no longer an issue thankfully, but it was double flats and sharps that were absolutely tripping them up. So I'll deal with that in a second, but first we could help deal with this problem quite a bit by just putting some restrictions of what scales the code can generate. 
 
 One of the best examples of what I mean, there was an instance where it generated the scale "D# Ionian". Now of course, this scale sucks because there's 9 sharps, everything is sharp and 2 double sharps of course. But the thing is this scale is simply the enharmonic of Eb Ionian, which is a much easier scale that my code was already able to do correctly. And the thing is you're never going to be asked for D# Ionian in a jury, unless they have some sort of vindetta against you. So I made sure in the javascript to add in some restrictions for the scales selected, so that it was always the "preferred" scale and didn't seep into territories where you're in double sharp or flat madness. And I decided to put in the scale restrictions with pretty firm manual language since it's pretty strict and will never be broken. There won't be a single instance I want a G# major scale, it will always be Ab. 
 
-Now with that little fix up, I did still have to deal with the double flat and sharp situation. I knew that I needed to implement them, but I wanted to make sure it identified where a double flat or sharp would appropriately be. What I ended up realizing is that there were "tendency spots" where these double flats or sharps would end up. Like in Level 3 scales, the scale 
+I entered in some hard restrictions for what notes can be used as the root of the scale, and thankfully it worked with no issues. 
+
+```Javascript
+// Only allow certain roots for "clean" spellings (avoiding excessive sharps/flats)
+const ALLOWED_ROOTS = ["C","Db","D","Eb","E","F","Gb","G","Ab","A","Bb","B"];
+
+function randomScale(level = currentLevel) {
+  const modePool = LEVEL_SCALES[level] || LEVEL_SCALES[1];
+  const mode = modePool[Math.floor(Math.random() * modePool.length)];
+
+  // pick a root from allowed roots only
+  const rootGroup = ENHARMONICS.filter(group => group.some(n => ALLOWED_ROOTS.includes(n)));
+  const rootGroupChoice = rootGroup[Math.floor(Math.random() * rootGroup.length)];
+
+  // pick the first note in group that is allowed
+  const root = rootGroupChoice.find(n => ALLOWED_ROOTS.includes(n));
+
+  const scale = generateScale(root, mode);
+  return { name: `${root} ${mode}`, notes: scale.join(" - ") };
+}
+```
+And honestly, this fixed up so many of the issues that I had since now all the roots for the scales have decent key signatures. I did still have to deal with the double flat and sharp situation. I knew that I needed to implement them, but I wanted to make sure it identified where a double flat or sharp would appropriately be. It basically just took a ton of troubleshooting, and you can see my javascript is sort of a graveyard of attempts, which little by little fixed the problem. There are still little instances where it sometimes doesnt work, but I would say the percentage of the scales that are outputted do have the proper notes with them. And lowkey the most important thing about the generator is just giving you the scale, you shouldn't need the notes given to you to be able to play it. It's just a nice thing I wanted to add to the generator. 
+
+So anyways I would wrap it up there, that's pretty much it for how I made the scales.js. So now lets see how I copied that logic for the chords and arpeggios.
 
 #### Implementing for chords and arpeggios  
 
@@ -114,8 +138,7 @@ I will be honest, this portion was pretty simple. Took a while to switch out the
 
 Also something that's funny that I realized as I worked on these exercises, you get the exact same chords and arpeggios from levels 1 + 2 to 3 + 4. The only difference is that you have to know 2 voices for each chords in Levels 3 + 4 instead of just one. Now I never ended up implementing anything solid to differentiate the experiences of the two level sets, but I just put in the little descriptions of the exercises up top that little detail in case the user wanted to know the difference. 
 
-This process did end up taking me a few days, 
-
+For now I think this is good. I'm in and out of these notes, but things are getting a little busy now.
 
 #### Implementing VexFlow
 
@@ -198,10 +221,186 @@ Honestly the HTML was very simple because I did a lot of the heavily lifting wit
 So by this point, I now had finally decided the theme that I was going to go for. I wanted a sort of ambient, dark, liminal space theme, with a futuristic sort of pallet to make it look cool
 
 
-
 Now I know this last thing is Javascript, but I'll put it in this section because it pretty much solely partains to the background of the front page. I learned about something called Three.js, which is really cool. It's a JavaScript library that makes it really easy to create 3D graphics in a browser. You can work with lights, cameras, objects, animations, and visual effects. You can go really really deep with this library as I've seen from various projects. 
 
-With a combination of looking at a bunch of open-source projects, youtube tutorials, and some AI assistance, I was able to get some pretty cool themes. I have a whole collection of them in my themes folder, but my most developed and coolest looking theme is the stars.js file. And then easily enough with a little more code I was able to set that as a background theme, and it was good to go. 
+With a combination of looking at a bunch of open-source projects, youtube tutorials, and some AI assistance, I was able to get some pretty cool themes. I have a whole collection of them in my themes folder, but my most developed and coolest looking theme is the stars.js file. And then easily enough with a little more code I was able to set that as a background theme, and it was good to go. And this is the inline script I used to call the stars.js to be the background of the website whenever I entered. I did have a theme selection menu I tried to setup, but it failed miserably and I haven't gotten it to work. But hopefully soon I can change that. 
+
+```Javascript
+  // Default theme on load
+    window.addEventListener("DOMContentLoaded", () => {
+      loadTheme("stars.js");
+    });
+```
+```CSS
+/* 3D canvas behind everything */
+#bgCanvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0; /* behind all UI */
+}
+```
+
+Anyways, for some actual CSS now. I added a glassy/foggy sort of effect to both of the panels by messing with the opacity, alongside a few other fun parameters. 
+
+```CSS
+/* GLASS LAYER — glossy chaotic shimmer */
+.panel-glass {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(75, 84, 93, 0.02); /* glassy transparency */
+  opacity: 0.5; /* control glass opacity here */
+  backdrop-filter: blur(10px) saturate(180%);
+  -webkit-backdrop-filter: blur(10px) saturate(180%);
+}
+```
+
+Honestly looking back through the CSS, there is so much that can be mentioned it's overwhelming. And I want to make sure to catch the main big picture things because I know Rachel Rome can look at all the code more in depth on her own time. So I will just add in a few of my favorite things that I ended up figuring out in the CSS that were pretty significant, or just satisfying. 
+
+This one will be a more satisfying one. With the way that I had the buttons set up with javascript instead of directly putting each button, I wanted a sleek way in order to design how they look in a pretty mathy way. And honestly I just wanted as much control over these buttons as I could, and so I put together this CSS so that it creates a nice tilted effect. 
+
+And this fixed my problem that when I would hover over one button, they would move weirdly because another button was based off the first button, and the positions were all screwed up. And so it just really tied down everything to be correct. And by this point of the project, I just couldn't deal with things failing on me anymore, and this locked it down. 
+
+```CSS
+/* CASCADING BUTTON OFFSET */
+.panel-btn:nth-child(1) { transform: translateX(0); }
+.panel-btn:nth-child(2) { transform: translateX(-45px); }
+.panel-btn:nth-child(3) { transform: translateX(-90px); }
+.panel-btn:nth-child(4) { transform: translateX(-135px); }
+
+/* HOVER EFFECTS */
+.panel-btn:nth-child(1):hover { transform: translateX(0) scale(1.05); }
+.panel-btn:nth-child(2):hover { transform: translateX(-45px) scale(1.05); }
+.panel-btn:nth-child(3):hover { transform: translateX(-90px) scale(1.05); }
+.panel-btn:nth-child(4):hover { transform: translateX(-135px) scale(1.05); }
+```
+
+Honestly one of my favorite things to design was the header panel. I really wanted to add a lot of depth,and so I really started experimenting with gradients, and the blur that I used before to create a real glossy and unique panel to go across the top. We can just take a little scan through it pasted below. And honestly a good bit of it might be a little redundant, but I don't want to accidentally ruin it so I'm just leaving it as is. 
+
+```CSS
+/* Header panel (top bar) */
+.header-panel {
+  position: absolute;
+  top: -100px; /* hidden initially */
+  left: 0;
+  width: 100%;
+  height: 13.6%; /* top 1/6 of screen */
+
+  /* Deeper metallic gradient (less see-through) */
+  background: linear-gradient(
+    to bottom,
+    rgba(10, 20, 40, 0.97) 0%,    /* deeper and richer navy */
+    rgba(20, 40, 70, 0.95) 50%, 
+    rgba(35, 70, 110, 0.92) 100%
+  );
+
+  /* Glossy top shine (stronger highlight band) */
+  background-image:
+    linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.1) 0%,
+      rgba(255, 255, 255, 0.06) 15%,
+      rgba(255, 255, 255, 0) 40%
+    );
+  background-blend-mode: overlay;
+
+  /* Stronger glass blur + more opacity */
+  backdrop-filter: blur(20px) saturate(180%) brightness(1.1);
+  -webkit-backdrop-filter: blur(20px) saturate(180%) brightness(1.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+
+  /* Depth + subtle reflective shadow */
+  box-shadow:
+    0 8px 25px rgba(0, 0, 0, 0.5),
+    inset 0 3px 6px rgba(255, 255, 255, 0.15),
+    inset 0 -3px 10px rgba(0, 0, 0, 0.5);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  transition: top 0.8s cubic-bezier(.6, .5, .1, .9);
+}
+```
+
+Another little detail that I added which I really like was a sort of shining animation that goes over certain parts inside the header panel to add a shimmering effect in a way. I added it to both the title and the text-slider. And I think it just adds a little spice that I like. 
+
+```CSS
+/* Gothic Title with Metallic Shine */
+.header-title {
+  position: absolute;
+  left: 8%; /* responsive offset from left edge */
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: 'UnifrakturMaguntia', cursive;
+  font-size: 2.3rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+
+  /* Metallic base look */
+  color: rgb(200, 200, 200);
+  background: linear-gradient(
+    120deg,
+    #9a9a9a 0%,
+    #cbcdce 30%,
+    #a0a0a0 45%,
+    #6f6f6f 60%,
+    #b9babb 80%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  /* Shine animation */
+  animation: shine 18s linear infinite;
+}
+
+/* Keyframes for moving shine */
+@keyframes shine {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+```
+I think maybe the last thing that I'd want to bring up are the cute little social icon buttons that I have. I got a bunch of copyright free svg icons online for different social medias, and I created a button for each one that had a hyperlink going to my socials. I just made the button pretty subtle, dark grey and transparent with the black cutout on each one, but when you hover over it the background turns to a blue gradient that really makes the logo pop. This one was sort of an accidental discovery while just trying stuff out with the hover effects and boom. 
+
+```CSS
+/* Individual Icon Styles */
+.social-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  overflow: hidden;
+}
+
+/* Ensure SVG fits nicely inside the button */
+.social-icon img {
+  width: 70%;  /* scale down inside the button */
+  height: 70%;
+  object-fit: contain;
+}
+
+/* Hover Effect */
+.social-icon:hover {
+  background: linear-gradient(135deg, #00ffff, #0077ff);
+  transform: scale(1.1) rotate(-2deg);
+  box-shadow: 0 4px 16px rgba(0,200,255,0.5);
+}
+```
+
+Ok I think that wraps up a majority of the big things that created what is the front page. There are a bunch of other fun things that I didn't mention, but the code is here for anyone to explore. Anyways let's move into the fun stuff that I was able to do with javascript to really tie this website together. 
 
 ### Javascript - Special Implementations & Features
 
@@ -363,10 +562,4 @@ The navigation works by first displaying a set of level buttons generated throug
 
 ### Sources and Guides to Do This
 
-Yea so I did use a whole lot of resources. I have been keeping track of them all though, including all AI conversations and what I learned from them.
-
-Javascript Resources
-
-CSS Resources
-
-AI Resources
+Yea I lowk need to put the sources here, working on that, my bad
